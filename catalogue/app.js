@@ -43,7 +43,17 @@ const products = [
 
 let selectedCategoryId = "insecticide";
 let selectedProductId = "aceman";
-let selectedPreview = "label";
+let showEditPanel = false;
+
+// Custom overrides for the edit panel — starts empty (uses product defaults)
+const editOverrides = {
+  name: "",
+  active: "",
+  concentration: "",
+  mode: "",
+  panelColor: "",
+  netContent: "1 L",
+};
 
 const categoryList = document.querySelector("#categoryList");
 const productsGrid = document.querySelector("#productsGrid");
@@ -54,7 +64,6 @@ const labelPreview = document.querySelector("#labelPreview");
 const bottlePreview = document.querySelector("#bottlePreview");
 const downloadButton = document.querySelector("#downloadSvg");
 const printButton = document.querySelector("#printLabel");
-const previewTabs = document.querySelectorAll("[data-preview]");
 
 function categoryById(id) {
   return categories.find((category) => category.id === id) || categories[0];
@@ -135,14 +144,25 @@ function renderProducts() {
     .join("");
 }
 
-function labelSvg(product, category) {
-  const productSize = product.name.length > 7 ? 132 : product.name.length > 5 ? 146 : 162;
-  const activeSize = product.active.length > 13 ? 34 : 42;
+function labelSvg(product, category, overrides = {}) {
+  const overrideName = (overrides.name || "").trim() || product.name;
+  const overrideActive = (overrides.active || "").trim() || product.active;
+  const overrideConc = (overrides.concentration || "").trim() || product.concentration;
+  const overrideMode = (overrides.mode || "").trim() || product.mode;
+  const overrideColor = (overrides.panelColor || "").trim() || category.color;
+  const overrideNetContent = (overrides.netContent || "").trim() || "1 L";
+
+  // Net content font sizing — shrinks for longer strings like "250 mL", "500 mL"
+  const contentLength = overrideNetContent.length;
+  const netContentSize = contentLength > 6 ? 62 : contentLength > 4 ? 76 : 92;
+
+  const productSize = overrideName.length > 7 ? 132 : overrideName.length > 5 ? 146 : 162;
+  const activeSize = overrideActive.length > 13 ? 34 : 42;
   const categoryLabel = category.name.toUpperCase();
-  const panelColor = category.color;
+  const panelColor = overrideColor;
 
   return `
-<svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 1200 1800" role="img" aria-label="MERCBEX ${product.name} print label">
+<svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 1200 1800" role="img" aria-label="MERCBEX ${overrideName} print label">
   <defs>
     <style>
       .font { font-family: Montserrat, Aptos, "Avenir Next", Arial, sans-serif; }
@@ -195,34 +215,34 @@ function labelSvg(product, category) {
 
     <g transform="translate(220 438)">
       <text x="0" y="0" class="font small white" font-weight="600">SYSTEMIC CROP PROTECTION</text>
-      <text x="0" y="176" class="font white" font-size="${productSize}" font-weight="820" letter-spacing="0">${product.name}</text>
+      <text x="0" y="176" class="font white" font-size="${productSize}" font-weight="820" letter-spacing="0">${overrideName}</text>
       <path d="M0 218 C160 246 335 246 536 218" stroke="#F6A400" stroke-width="9" fill="none"/>
-      <text x="0" y="314" class="font white" font-size="${activeSize}" font-weight="650" letter-spacing="0">${product.active}</text>
-      <text x="0" y="380" class="font lime medium" font-weight="750">${product.concentration}</text>
-      <text x="0" y="448" class="font small white" font-weight="500">Mode of action: ${product.mode}</text>
+      <text x="0" y="314" class="font white" font-size="${activeSize}" font-weight="650" letter-spacing="0">${overrideActive}</text>
+      <text x="0" y="380" class="font lime medium" font-weight="750">${overrideConc}</text>
+      <text x="0" y="448" class="font small white" font-weight="500">Mode of action: ${overrideMode}</text>
     </g>
 
     <path d="M108 1206 C250 1132 399 1116 581 1178 C758 1238 935 1222 1092 1164 L1092 1500 C926 1538 750 1538 580 1482 C392 1419 252 1436 108 1512 Z" fill="#F7F9F8"/>
     <path d="M108 1206 C250 1132 399 1116 581 1178 C758 1238 935 1222 1092 1164" stroke="#BFC5C8" stroke-width="5" opacity="0.75" fill="none"/>
 
-    <rect x="220" y="1268" width="760" height="156" rx="30" fill="#FFFFFF" opacity="0.82"/>
-    <g transform="translate(288 1310)">
+    <rect x="144" y="1268" width="912" height="156" rx="30" fill="#FFFFFF" opacity="0.82"/>
+    <g transform="translate(300 1288)">
       <g transform="translate(0 0)">
-        <circle cx="36" cy="36" r="32" fill="none" stroke="#006B46" stroke-width="4"/>
-        <path d="M20 38 L32 50 L55 22" stroke="#006B46" stroke-width="5" fill="none"/>
+        <circle cx="36" cy="36" r="32" fill="none" stroke="${panelColor}" stroke-width="4"/>
+        <path d="M20 38 L32 50 L55 22" stroke="${panelColor}" stroke-width="5" fill="none"/>
         <text x="36" y="92" text-anchor="middle" class="font micro charcoal" font-weight="650">High</text>
         <text x="36" y="124" text-anchor="middle" class="font micro charcoal" font-weight="650">Efficacy</text>
       </g>
-      <g transform="translate(276 0)">
-        <circle cx="36" cy="36" r="32" fill="none" stroke="#006B46" stroke-width="4"/>
-        <path d="M36 16 L36 56 M16 36 L56 36 M22 22 L50 50 M50 22 L22 50" stroke="#006B46" stroke-width="4"/>
+      <g transform="translate(280 0)">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="${panelColor}" stroke-width="4"/>
+        <path d="M36 16 L36 56 M16 36 L56 36 M22 22 L50 50 M50 22 L22 50" stroke="${panelColor}" stroke-width="4"/>
         <text x="36" y="92" text-anchor="middle" class="font micro charcoal" font-weight="650">Broad</text>
         <text x="36" y="124" text-anchor="middle" class="font micro charcoal" font-weight="650">Spectrum</text>
       </g>
-      <g transform="translate(552 0)">
-        <circle cx="36" cy="36" r="32" fill="none" stroke="#006B46" stroke-width="4"/>
-        <path d="M36 18 C52 28 58 40 54 55 C43 66 28 66 18 55 C14 40 21 28 36 18 Z" stroke="#006B46" stroke-width="4" fill="none"/>
-        <path d="M36 28 L36 47 L48 47" stroke="#006B46" stroke-width="4" fill="none"/>
+      <g transform="translate(560 0)">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="${panelColor}" stroke-width="4"/>
+        <path d="M36 18 C52 28 58 40 54 55 C43 66 28 66 18 55 C14 40 21 28 36 18 Z" stroke="${panelColor}" stroke-width="4" fill="none"/>
+        <path d="M36 28 L36 47 L48 47" stroke="${panelColor}" stroke-width="4" fill="none"/>
         <text x="36" y="92" text-anchor="middle" class="font micro charcoal" font-weight="650">Long</text>
         <text x="36" y="124" text-anchor="middle" class="font micro charcoal" font-weight="650">Control</text>
       </g>
@@ -230,7 +250,7 @@ function labelSvg(product, category) {
 
     <g transform="translate(220 1550)">
       <text x="0" y="0" class="font micro grey" font-weight="650">NET CONTENT</text>
-      <text x="0" y="76" class="font pack" fill="#007A3D">1 L</text>
+      <text x="0" y="54" class="font" font-size="${netContentSize}" font-weight="760" fill="${panelColor}">${overrideNetContent}</text>
       <text x="218" y="20" class="font micro charcoal" font-weight="650">MERCBEX Chemical Science LLP</text>
       <text x="218" y="58" class="font micro grey" font-weight="500">Reg. / Batch / Mfg / Exp / MRP</text>
       <text x="218" y="96" class="font micro grey" font-weight="500">Mfr. address / Customer care</text>
@@ -252,13 +272,32 @@ function renderLabel() {
   const product = productById(selectedProductId);
   const category = categoryById(product.categoryId);
 
-  selectedName.textContent = product.name;
-  setThemeColor(category.color);
-  labelPreview.innerHTML = labelSvg(product, category);
+  const activeOverrides = {
+    name: editOverrides.name || product.name,
+    active: editOverrides.active || product.active,
+    concentration: editOverrides.concentration || product.concentration,
+    mode: editOverrides.mode || product.mode,
+    panelColor: editOverrides.panelColor || category.color,
+    netContent: editOverrides.netContent || "1 L",
+  };
+
+  selectedName.textContent = activeOverrides.name;
+  setThemeColor(activeOverrides.panelColor);
+  labelPreview.innerHTML = labelSvg(product, category, activeOverrides);
+
+  // Sync edit panel fields
+  document.getElementById("editProductName").value = editOverrides.name || product.name;
+  document.getElementById("editActive").value = editOverrides.active || product.active;
+  document.getElementById("editConcentration").value = editOverrides.concentration || product.concentration;
+  document.getElementById("editMode").value = editOverrides.mode || product.mode;
+  document.getElementById("editColor").value = activeOverrides.panelColor;
+  document.getElementById("editNetContent").value = editOverrides.netContent || "1 L";
   bottlePreview.innerHTML = `
     ${product.mockup ? `
-      <figure class="real-bottle-preview">
-        <img src="${product.mockup}" alt="${product.name} realistic bottle mockup" />
+      <figure class="bottle-composite">
+        <div class="bottle-image-wrap">
+          <img class="bottle-bg" src="${product.mockup}" alt="${product.name} realistic bottle mockup" />
+        </div>
       </figure>
     ` : `
       <div class="mockup-empty" style="--category-color: ${category.color}">
@@ -269,9 +308,9 @@ function renderLabel() {
       </div>
     `}
   `;
-  labelPreview.hidden = selectedPreview !== "label";
-  bottlePreview.hidden = selectedPreview !== "bottle";
-  downloadButton.disabled = selectedPreview !== "label";
+  labelPreview.hidden = false;
+  bottlePreview.hidden = false;
+  downloadButton.disabled = false;
 }
 
 function renderEmptyLabel(category) {
@@ -285,7 +324,7 @@ function renderEmptyLabel(category) {
   `;
   bottlePreview.innerHTML = "";
   labelPreview.hidden = false;
-  bottlePreview.hidden = true;
+  bottlePreview.hidden = false;
   downloadButton.disabled = true;
 }
 
@@ -327,36 +366,52 @@ productsGrid.addEventListener("click", (event) => {
   renderLabel();
 });
 
-previewTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    selectedPreview = tab.dataset.preview;
-    previewTabs.forEach((button) => {
-      button.setAttribute("aria-selected", String(button === tab));
-    });
+// --- Edit panel handlers ---
+
+const toggleEditBtn = document.getElementById("toggleEditPanel");
+const editPanel = document.getElementById("editPanel");
+
+toggleEditBtn.addEventListener("click", () => {
+  showEditPanel = !showEditPanel;
+  toggleEditBtn.setAttribute("aria-pressed", String(showEditPanel));
+  editPanel.hidden = !showEditPanel;
+});
+
+function applyOverride(field) {
+  return (e) => {
+    editOverrides[field] = e.target.value;
     renderLabel();
-  });
+  };
+}
+
+document.getElementById("editProductName").addEventListener("input", applyOverride("name"));
+document.getElementById("editActive").addEventListener("input", applyOverride("active"));
+document.getElementById("editConcentration").addEventListener("input", applyOverride("concentration"));
+document.getElementById("editMode").addEventListener("input", applyOverride("mode"));
+document.getElementById("editColor").addEventListener("input", applyOverride("panelColor"));
+document.getElementById("editNetContent").addEventListener("change", applyOverride("netContent"));
+
+document.getElementById("resetEditPanel").addEventListener("click", () => {
+  Object.keys(editOverrides).forEach((k) => { editOverrides[k] = k === "netContent" ? "1 L" : ""; });
+  renderLabel();
 });
 
 downloadButton.addEventListener("click", () => {
   if (downloadButton.disabled) return;
   const product = productById(selectedProductId);
+  const downloadName = (editOverrides.name || "").trim() || product.name;
   const svg = labelPreview.querySelector("svg");
   const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = `mercbex-${product.name.toLowerCase()}-label.svg`;
+  link.download = `mercbex-${downloadName.toLowerCase()}-label.svg`;
   link.click();
   URL.revokeObjectURL(url);
 });
 
 printButton.addEventListener("click", () => {
-  selectedPreview = "label";
-  previewTabs.forEach((button) => {
-    button.setAttribute("aria-selected", String(button.dataset.preview === "label"));
-  });
-  renderLabel();
   window.print();
 });
 

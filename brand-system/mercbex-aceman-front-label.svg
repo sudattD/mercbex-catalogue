@@ -77,21 +77,21 @@
     <path d="M108 1206 C250 1132 399 1116 581 1178 C758 1238 935 1222 1092 1164 L1092 1500 C926 1538 750 1538 580 1482 C392 1419 252 1436 108 1512 Z" fill="#F7F9F8"/>
     <path d="M108 1206 C250 1132 399 1116 581 1178 C758 1238 935 1222 1092 1164" stroke="#BFC5C8" stroke-width="5" opacity="0.75" fill="none"/>
 
-    <rect x="220" y="1268" width="760" height="156" rx="30" fill="#FFFFFF" opacity="0.82"/>
-    <g transform="translate(288 1310)">
+    <rect x="144" y="1268" width="912" height="156" rx="30" fill="#FFFFFF" opacity="0.82"/>
+    <g transform="translate(300 1288)">
       <g transform="translate(0 0)">
         <circle cx="36" cy="36" r="32" fill="none" stroke="#006B46" stroke-width="4"/>
         <path d="M20 38 L32 50 L55 22" stroke="#006B46" stroke-width="5" fill="none"/>
         <text x="36" y="92" text-anchor="middle" class="font micro charcoal" font-weight="650">High</text>
         <text x="36" y="124" text-anchor="middle" class="font micro charcoal" font-weight="650">Efficacy</text>
       </g>
-      <g transform="translate(276 0)">
+      <g transform="translate(280 0)">
         <circle cx="36" cy="36" r="32" fill="none" stroke="#006B46" stroke-width="4"/>
         <path d="M36 16 L36 56 M16 36 L56 36 M22 22 L50 50 M50 22 L22 50" stroke="#006B46" stroke-width="4"/>
         <text x="36" y="92" text-anchor="middle" class="font micro charcoal" font-weight="650">Broad</text>
         <text x="36" y="124" text-anchor="middle" class="font micro charcoal" font-weight="650">Spectrum</text>
       </g>
-      <g transform="translate(552 0)">
+      <g transform="translate(560 0)">
         <circle cx="36" cy="36" r="32" fill="none" stroke="#006B46" stroke-width="4"/>
         <path d="M36 18 C52 28 58 40 54 55 C43 66 28 66 18 55 C14 40 21 28 36 18 Z" stroke="#006B46" stroke-width="4" fill="none"/>
         <path d="M36 28 L36 47 L48 47" stroke="#006B46" stroke-width="4" fill="none"/>

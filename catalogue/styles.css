@@ -29,7 +29,7 @@ button {
 
 .catalogue-shell {
   display: grid;
-  grid-template-columns: 280px minmax(320px, 1fr) minmax(420px, 520px);
+  grid-template-columns: 280px minmax(320px, 1fr) minmax(420px, 1.1fr);
   min-height: 100vh;
 }
 
@@ -250,6 +250,15 @@ h2 {
   opacity: 0.45;
 }
 
+.edit-toggle {
+  background: var(--mercbex-charcoal);
+  color: #ffffff;
+}
+
+.edit-toggle[aria-pressed="true"] {
+  background: var(--mercbex-green);
+}
+
 .preview-tabs {
   display: inline-flex;
   border: 1px solid var(--line);
@@ -272,15 +281,31 @@ h2 {
 
 .label-frame {
   display: grid;
-  place-items: start center;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
   border-radius: 8px;
   background: #f6f8f7;
   padding: 20px;
 }
 
+.preview-slot {
+  display: grid;
+  gap: 8px;
+  place-items: center;
+}
+
+.preview-slot-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mercbex-grey);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .label-preview {
-  width: min(100%, 360px);
+  width: 100%;
   aspect-ratio: 2 / 3;
+  max-width: 340px;
 }
 
 .bottle-preview {
@@ -292,6 +317,72 @@ h2 {
   height: 100%;
   display: block;
   filter: drop-shadow(0 18px 24px rgba(24, 33, 29, 0.16));
+}
+
+.edit-panel {
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8faf8;
+}
+
+.edit-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mercbex-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.edit-field input,
+.edit-field select {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mercbex-charcoal);
+}
+
+.edit-field input[type="color"] {
+  width: 100%;
+  height: 40px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+  outline: 2px solid var(--mercbex-green);
+  border-color: transparent;
+}
+
+.edit-reset {
+  margin-top: 14px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--mercbex-grey);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.edit-reset:hover {
+  color: var(--mercbex-charcoal);
 }
 
 .empty-label {
@@ -346,8 +437,33 @@ h2 {
   border-radius: 6px;
 }
 
-.real-bottle-card {
+.bottle-composite {
+  position: relative;
+  display: inline-block;
   margin: 0;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 84%, rgba(255, 255, 255, 0.12), transparent 34%),
+    linear-gradient(180deg, #101412 0%, #060807 100%);
+  padding: 18px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.bottle-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.bottle-image-wrap {
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .mockup-empty {
@@ -403,8 +519,12 @@ h2 {
     border-top: 1px solid var(--line);
   }
 
+  .label-frame {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .label-preview {
-    width: min(100%, 420px);
+    width: 100%;
   }
 }
 
@@ -418,6 +538,10 @@ h2 {
   .label-stage {
     border: 0;
     padding: 22px;
+  }
+
+  .label-frame {
+    grid-template-columns: 1fr;
   }
 
   .panel-heading,
