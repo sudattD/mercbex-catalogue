@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1120" viewBox="0 0 1800 1120" role="img" aria-label="MERCBEX category packaging family system">
+  <defs>
+    <style>
+      .font { font-family: Montserrat, Aptos, Avenir Next, Arial, sans-serif; }
+      .title { font-size: 52px; font-weight: 720; fill: #18211D; }
+      .copy { font-size: 28px; font-weight: 450; fill: #66716D; }
+      .brand { font-size: 24px; font-weight: 700; fill: #F6A400; }
+      .cat { font-size: 19px; font-weight: 700; fill: #FFFFFF; }
+      .name { font-size: 38px; font-weight: 790; fill: #FFFFFF; }
+      .detail { font-size: 18px; font-weight: 520; fill: #FFFFFF; }
+      .bottom { font-size: 16px; font-weight: 560; fill: #18211D; }
+    </style>
+    <clipPath id="miniClip"><rect x="0" y="0" width="250" height="430" rx="20"/></clipPath>
+    <path id="panelShape" d="M0 115 C58 92 105 96 151 111 C195 126 220 122 250 96 L250 332 C205 352 160 350 118 336 C73 321 35 326 0 348 Z"/>
+  </defs>
+
+  <rect width="1800" height="1120" fill="#F4F6F4"/>
+  <text x="90" y="96" class="font title">MERCBEX Master Packaging Identity</text>
+  <text x="90" y="142" class="font copy">Logo-inspired curves, agricultural colour fields, and one repeatable structure for 100+ products.</text>
+
+  <g transform="translate(90 230)">
+    <g>
+      <rect width="250" height="430" rx="20" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="2"/>
+      <g clip-path="url(#miniClip)">
+        <rect width="250" height="430" fill="#FFFFFF"/>
+        <image href="mercbex-logo.png" x="44" y="18" width="162" height="59" preserveAspectRatio="xMidYMid meet"/>
+        <use href="#panelShape" fill="#006B46"/>
+        <path d="M0 139 C70 105 126 128 177 144 C207 154 228 150 250 132" stroke="#76B82A" stroke-width="7" opacity="0.58" fill="none"/>
+        <path d="M0 172 C71 140 124 157 178 176 C209 187 230 184 250 165" stroke="#FFFFFF" stroke-width="2" opacity="0.32" fill="none"/>
+        <rect x="30" y="128" width="102" height="26" rx="13" fill="#F6A400"/>
+        <text x="81" y="147" text-anchor="middle" class="font cat">INSECTICIDE</text>
+        <text x="30" y="220" class="font name">ACEMAN</text>
+        <text x="30" y="258" class="font detail">ACETAMIPRID</text>
+        <text x="30" y="288" class="font detail">20.0% SP</text>
+        <path d="M0 348 C35 326 73 321 118 336 C160 350 205 352 250 332 L250 383 C200 395 158 394 115 381 C70 368 34 372 0 390 Z" fill="#F7F9F8"/>
+        <text x="30" y="404" class="font bottom">1 L | MERCBEX LLP</text>
+      </g>
+      <text x="125" y="484" text-anchor="middle" class="font copy" font-size="22px">Insecticide</text>
+    </g>
+
+    <g transform="translate(300 0)">
+      <rect width="250" height="430" rx="20" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="2"/>
+      <g clip-path="url(#miniClip)">
+        <rect width="250" height="430" fill="#FFFFFF"/>
+        <image href="mercbex-logo.png" x="44" y="18" width="162" height="59" preserveAspectRatio="xMidYMid meet"/>
+        <use href="#panelShape" fill="#1F5FAE"/>
+        <path d="M0 139 C70 105 126 128 177 144 C207 154 228 150 250 132" stroke="#76B82A" stroke-width="7" opacity="0.58" fill="none"/>
+        <path d="M0 172 C71 140 124 157 178 176 C209 187 230 184 250 165" stroke="#FFFFFF" stroke-width="2" opacity="0.32" fill="none"/>
+        <rect x="30" y="128" width="94" height="26" rx="13" fill="#F6A400"/>
+        <text x="77" y="147" text-anchor="middle" class="font cat">HERBICIDE</text>
+        <text x="30" y="220" class="font name">CLEAR</text>
+        <text x="30" y="258" class="font detail">ACTIVE</text>
+        <text x="30" y="288" class="font detail">CONC.</text>
+        <path d="M0 348 C35 326 73 321 118 336 C160 350 205 352 250 332 L250 383 C200 395 158 394 115 381 C70 368 34 372 0 390 Z" fill="#F7F9F8"/>
+        <text x="30" y="404" class="font bottom">1 L | MERCBEX LLP</text>
+      </g>
+      <text x="125" y="484" text-anchor="middle" class="font copy" font-size="22px">Herbicide</text>
+    </g>
+
+    <g transform="translate(600 0)">
+      <rect width="250" height="430" rx="20" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="2"/>
+      <g clip-path="url(#miniClip)">
+        <rect width="250" height="430" fill="#FFFFFF"/>
+        <image href="mercbex-logo.png" x="44" y="18" width="162" height="59" preserveAspectRatio="xMidYMid meet"/>
+        <use href="#panelShape" fill="#E97822"/>
+        <path d="M0 139 C70 105 126 128 177 144 C207 154 228 150 250 132" stroke="#76B82A" stroke-width="7" opacity="0.50" fill="none"/>
+        <path d="M0 172 C71 140 124 157 178 176 C209 187 230 184 250 165" stroke="#FFFFFF" stroke-width="2" opacity="0.30" fill="none"/>
+        <rect x="30" y="128" width="92" height="26" rx="13" fill="#006B46"/>
+        <text x="76" y="147" text-anchor="middle" class="font cat">FUNGICIDE</text>
+        <text x="30" y="220" class="font name">SHIELD</text>
+        <text x="30" y="258" class="font detail">ACTIVE</text>
+        <text x="30" y="288" class="font detail">CONC.</text>
+        <path d="M0 348 C35 326 73 321 118 336 C160 350 205 352 250 332 L250 383 C200 395 158 394 115 381 C70 368 34 372 0 390 Z" fill="#F7F9F8"/>
+        <text x="30" y="404" class="font bottom">1 L | MERCBEX LLP</text>
+      </g>
+      <text x="125" y="484" text-anchor="middle" class="font copy" font-size="22px">Fungicide</text>
+    </g>
+
+    <g transform="translate(900 0)">
+      <rect width="250" height="430" rx="20" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="2"/>
+      <g clip-path="url(#miniClip)">
+        <rect width="250" height="430" fill="#FFFFFF"/>
+        <image href="mercbex-logo.png" x="44" y="18" width="162" height="59" preserveAspectRatio="xMidYMid meet"/>
+        <use href="#panelShape" fill="#6B4FB3"/>
+        <path d="M0 139 C70 105 126 128 177 144 C207 154 228 150 250 132" stroke="#76B82A" stroke-width="7" opacity="0.50" fill="none"/>
+        <path d="M0 172 C71 140 124 157 178 176 C209 187 230 184 250 165" stroke="#FFFFFF" stroke-width="2" opacity="0.30" fill="none"/>
+        <rect x="30" y="128" width="54" height="26" rx="13" fill="#F6A400"/>
+        <text x="57" y="147" text-anchor="middle" class="font cat">PGR</text>
+        <text x="30" y="220" class="font name">VIGOR</text>
+        <text x="30" y="258" class="font detail">ACTIVE</text>
+        <text x="30" y="288" class="font detail">CONC.</text>
+        <path d="M0 348 C35 326 73 321 118 336 C160 350 205 352 250 332 L250 383 C200 395 158 394 115 381 C70 368 34 372 0 390 Z" fill="#F7F9F8"/>
+        <text x="30" y="404" class="font bottom">1 L | MERCBEX LLP</text>
+      </g>
+      <text x="125" y="484" text-anchor="middle" class="font copy" font-size="22px">PGR</text>
+    </g>
+
+    <g transform="translate(1200 0)">
+      <rect width="250" height="430" rx="20" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="2"/>
+      <g clip-path="url(#miniClip)">
+        <rect width="250" height="430" fill="#FFFFFF"/>
+        <image href="mercbex-logo.png" x="44" y="18" width="162" height="59" preserveAspectRatio="xMidYMid meet"/>
+        <use href="#panelShape" fill="#4F9A38"/>
+        <path d="M0 139 C70 105 126 128 177 144 C207 154 228 150 250 132" stroke="#76B82A" stroke-width="7" opacity="0.60" fill="none"/>
+        <path d="M0 172 C71 140 124 157 178 176 C209 187 230 184 250 165" stroke="#FFFFFF" stroke-width="2" opacity="0.32" fill="none"/>
+        <rect x="30" y="128" width="82" height="26" rx="13" fill="#F6A400"/>
+        <text x="71" y="147" text-anchor="middle" class="font cat">BIO</text>
+        <text x="30" y="220" class="font name">NATURA</text>
+        <text x="30" y="258" class="font detail">ACTIVE</text>
+        <text x="30" y="288" class="font detail">CONC.</text>
+        <path d="M0 348 C35 326 73 321 118 336 C160 350 205 352 250 332 L250 383 C200 395 158 394 115 381 C70 368 34 372 0 390 Z" fill="#F7F9F8"/>
+        <text x="30" y="404" class="font bottom">1 L | MERCBEX LLP</text>
+      </g>
+      <text x="125" y="484" text-anchor="middle" class="font copy" font-size="22px">Bio Products</text>
+    </g>
+  </g>
+
+  <g transform="translate(90 835)">
+    <text x="0" y="0" class="font copy" font-size="30px" font-weight="650" fill="#18211D">System Rule</text>
+    <text x="0" y="50" class="font copy">Logo zone, curved field, crop-row lines, icon strip, and footer remain fixed.</text>
+    <text x="0" y="92" class="font copy">Only the main colour panel changes, so every product remains immediately recognisable as MERCBEX.</text>
+  </g>
+</svg>

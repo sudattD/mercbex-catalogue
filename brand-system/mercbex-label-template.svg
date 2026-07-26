@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 1200 1800" role="img" aria-label="MERCBEX reusable organic master label template">
+  <defs>
+    <style>
+      .font { font-family: Montserrat, Aptos, Avenir Next, Arial, sans-serif; }
+      .panel { fill: var(--panel, #006B46); }
+      .logoGreen { fill: #007A3D; }
+      .lime { fill: #76B82A; }
+      .orange { fill: #F6A400; }
+      .silver { fill: #BFC5C8; }
+      .charcoal { fill: #18211D; }
+      .grey { fill: #66716D; }
+      .white { fill: #FFFFFF; }
+      .micro { font-size: 24px; letter-spacing: 0; }
+      .small { font-size: 31px; letter-spacing: 0; }
+      .medium { font-size: 42px; letter-spacing: 0; }
+      .brand { font-size: 90px; letter-spacing: 0; font-weight: 700; }
+      .product { font-size: 136px; letter-spacing: 0; font-weight: 800; }
+      .pack { font-size: 92px; letter-spacing: 0; font-weight: 740; }
+    </style>
+    <clipPath id="labelClip"><rect x="108" y="72" width="984" height="1656" rx="42"/></clipPath>
+    <clipPath id="panelClip"><path d="M108 390 C270 340 421 356 570 398 C755 451 904 434 1092 346 L1092 1264 C935 1322 758 1338 581 1278 C399 1216 251 1232 108 1306 Z"/></clipPath>
+    <pattern id="molecules" width="172" height="148" patternUnits="userSpaceOnUse">
+      <circle cx="30" cy="30" r="5" fill="#FFFFFF" opacity="0.15"/>
+      <circle cx="94" cy="48" r="4" fill="#76B82A" opacity="0.26"/>
+      <circle cx="140" cy="104" r="6" fill="#F6A400" opacity="0.15"/>
+      <path d="M35 32 L90 47 L135 100" stroke="#FFFFFF" stroke-width="2" opacity="0.13" fill="none"/>
+      <path d="M94 52 L62 118" stroke="#BFC5C8" stroke-width="2" opacity="0.18" fill="none"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="1800" fill="#F4F6F4"/>
+  <rect x="108" y="72" width="984" height="1656" rx="42" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="4"/>
+  <g clip-path="url(#labelClip)">
+    <rect x="108" y="72" width="984" height="1656" fill="#FFFFFF"/>
+    <image href="mercbex-logo.png" x="390" y="112" width="420" height="153" preserveAspectRatio="xMidYMid meet"/>
+    <path d="M108 390 C270 340 421 356 570 398 C755 451 904 434 1092 346 L1092 1264 C935 1322 758 1338 581 1278 C399 1216 251 1232 108 1306 Z" fill="#006B46"/>
+    <g clip-path="url(#panelClip)">
+      <path d="M100 480 C290 394 470 438 642 493 C790 541 930 523 1100 430" stroke="#76B82A" stroke-width="20" opacity="0.52" fill="none"/>
+      <path d="M100 560 C300 482 462 514 638 570 C800 621 934 602 1100 520" stroke="#FFFFFF" stroke-width="6" opacity="0.22" fill="none"/>
+      <path d="M100 640 C308 566 468 596 640 654 C800 708 936 690 1100 610" stroke="#FFFFFF" stroke-width="5" opacity="0.16" fill="none"/>
+      <rect x="724" y="482" width="368" height="600" fill="url(#molecules)" opacity="0.95"/>
+    </g>
+    <g transform="translate(220 420)">
+      <rect x="0" y="0" width="260" height="58" rx="29" fill="#F6A400"/>
+      <text x="130" y="38" text-anchor="middle" class="font micro white" font-weight="700">CATEGORY</text>
+    </g>
+    <g transform="translate(220 538)">
+      <text x="0" y="0" class="font small white" font-weight="600">PRODUCT DESCRIPTOR</text>
+      <text x="0" y="176" class="font product white">PRODUCT</text>
+      <path d="M0 218 C160 246 335 246 536 218" stroke="#F6A400" stroke-width="9" fill="none"/>
+      <text x="0" y="314" class="font medium white" font-weight="650">ACTIVE INGREDIENT</text>
+      <text x="0" y="380" class="font medium lime" font-weight="750">CONCENTRATION</text>
+      <text x="0" y="448" class="font small white" font-weight="500">Mode of action and primary product benefit</text>
+    </g>
+    <path d="M108 1306 C250 1232 399 1216 581 1278 C758 1338 935 1322 1092 1264 L1092 1500 C926 1538 750 1538 580 1482 C392 1419 252 1436 108 1512 Z" fill="#F7F9F8"/>
+    <path d="M108 1306 C250 1232 399 1216 581 1278 C758 1338 935 1322 1092 1264" stroke="#BFC5C8" stroke-width="5" opacity="0.75" fill="none"/>
+    <g transform="translate(220 1550)">
+      <text x="0" y="0" class="font micro grey" font-weight="650">NET CONTENT</text>
+      <text x="0" y="76" class="font pack logoGreen">1 L</text>
+      <text x="218" y="20" class="font micro charcoal" font-weight="650">MERCBEX Chemical Science LLP</text>
+      <text x="218" y="58" class="font micro grey" font-weight="500">Registration / Batch / Mfg / Exp / MRP</text>
+      <text x="218" y="96" class="font micro grey" font-weight="500">Manufacturer and customer care details</text>
+    </g>
+    <g transform="translate(846 1454)">
+      <rect x="0" y="0" width="204" height="204" rx="14" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="3"/>
+      <rect x="20" y="20" width="164" height="164" fill="#FFFFFF" stroke="#18211D" stroke-width="10"/>
+      <text x="102" y="112" text-anchor="middle" class="font micro charcoal" font-weight="650">QR</text>
+    </g>
+    <rect x="108" y="1670" width="984" height="58" fill="#18211D"/>
+    <text x="220" y="1708" class="font micro white" font-weight="600">READ LABEL BEFORE USE</text>
+    <text x="740" y="1708" class="font micro white" font-weight="500">FOR AGRICULTURAL USE</text>
+  </g>
+</svg>

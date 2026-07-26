@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MERCBEX Product Catalogue</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="catalogue-shell">
+      <section class="sidebar" aria-label="Product categories">
+        <div class="brand-lockup">
+          <img src="../brand-system/mercbex-logo.png" alt="MERCBEX" />
+          <p>Product label catalogue</p>
+        </div>
+
+        <div class="category-list" id="categoryList"></div>
+      </section>
+
+      <section class="product-panel" aria-label="Products">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Category</p>
+            <h1 id="categoryTitle">Insecticide</h1>
+          </div>
+          <span id="categoryPill" class="category-pill">Deep Emerald Green</span>
+        </div>
+
+        <div class="products-grid" id="productsGrid"></div>
+      </section>
+
+      <section class="label-stage" aria-label="Printable label preview">
+        <div class="stage-toolbar">
+          <div>
+            <p class="eyebrow">Preview</p>
+            <h2 id="selectedName">ACEMAN</h2>
+          </div>
+          <div class="toolbar-actions">
+            <div class="preview-tabs" role="tablist" aria-label="Preview type">
+              <button class="preview-tab" type="button" data-preview="label" aria-selected="true">Label</button>
+              <button class="preview-tab" type="button" data-preview="bottle" aria-selected="false">Bottle</button>
+            </div>
+            <button id="downloadSvg" type="button">Download SVG</button>
+            <button id="printLabel" type="button">Print</button>
+          </div>
+        </div>
+
+        <div class="label-frame">
+          <div id="labelPreview" class="label-preview"></div>
+          <div id="bottlePreview" class="bottle-preview" hidden></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
