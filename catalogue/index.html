@@ -4,26 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MERCBEX Product Catalogue</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260727-print-modes" />
   </head>
   <body>
     <main class="catalogue-shell">
-      <section class="sidebar" aria-label="Product categories">
+      <section class="sidebar" aria-label="Alphabetical product navigation">
         <div class="brand-lockup">
           <img src="../brand-system/mercbex-logo.png" alt="MERCBEX" />
           <p>Master label studio</p>
         </div>
 
-        <div class="category-list" id="categoryList"></div>
+        <div class="alpha-list" id="alphaList"></div>
       </section>
 
       <section class="product-panel" aria-label="Products">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">Category</p>
-            <h1 id="categoryTitle">Insecticide</h1>
+            <p class="eyebrow">Products</p>
+            <h1 id="productListTitle">Alphabetical</h1>
           </div>
-          <span id="categoryPill" class="category-pill">Deep Emerald Green</span>
+          <span id="productListPill" class="category-pill">A-Z</span>
+        </div>
+
+        <div class="product-tools">
+          <label class="product-search">
+            <span>Search products</span>
+            <input type="search" id="productSearch" placeholder="Search by product, ingredient, formula" />
+          </label>
+          <p class="product-count" id="productCount">0 products</p>
         </div>
 
         <div class="products-grid" id="productsGrid"></div>
@@ -40,8 +48,9 @@
               <button class="preview-tab" type="button" data-preview="studio" aria-selected="true">Studio</button>
               <button class="preview-tab" type="button" data-preview="label" aria-selected="false">Label</button>
             </div>
-            <button id="downloadSvg" type="button">Download SVG</button>
+            <button id="downloadSvg" type="button">Download Label SVG</button>
             <button id="saveLabel" type="button" class="save-button">Save Label</button>
+            <button id="saveBottle" type="button" class="save-bottle-button">Save Bottle</button>
             <button id="printLabel" type="button">Print</button>
             <label class="zoom-control">
               <span class="zoom-label" id="zoomValue">100%</span>
@@ -54,6 +63,10 @@
           <div class="edit-panel">
             <div class="edit-panel-header">Customize Label</div>
             <div class="edit-fields">
+              <label class="edit-field">
+                <span>Product From Sheet</span>
+                <select id="productSelect"></select>
+              </label>
               <div class="edit-field-row">
                 <label class="edit-field edit-field-grow">
                   <span>Product Name</span>
@@ -155,24 +168,25 @@
               </div>
               <div class="edit-field-row">
                 <label class="edit-field edit-field-grow">
-                  <span>Mode of Action</span>
-                  <input type="text" id="editMode" />
+                  <span>Active Ingredient 2 (optional)</span>
+                  <input type="text" id="editActive2" placeholder="Optional second active" />
                 </label>
                 <label class="edit-field edit-field-sm">
                   <span>Size</span>
-                  <select id="editModeSize">
+                  <select id="editActive2Size">
                     <option value="">Auto</option>
-                    <option value="22">22px</option>
-                    <option value="26">26px</option>
-                    <option value="31">31px</option>
-                    <option value="36">36px</option>
+                    <option value="28">28px</option>
+                    <option value="32">32px</option>
+                    <option value="34">34px</option>
+                    <option value="38">38px</option>
                     <option value="42">42px</option>
+                    <option value="48">48px</option>
                   </select>
                 </label>
                 <label class="edit-field edit-field-color">
                   <span>Color</span>
                   <div class="color-picker-group">
-                    <select id="editModeColor">
+                    <select id="editActive2Color">
                       <option value="">White</option>
                       <option value="#76B82A">Lime</option>
                       <option value="#F6A400">Orange</option>
@@ -181,7 +195,39 @@
                       <option value="#6B4FB3">Purple</option>
                       <option value="#18211D">Charcoal</option>
                     </select>
-                    <input type="color" id="editModeColorCustom" value="#FFFFFF" />
+                    <input type="color" id="editActive2ColorCustom" value="#FFFFFF" />
+                  </div>
+                </label>
+              </div>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Concentration 2 (optional)</span>
+                  <input type="text" id="editConcentration2" placeholder="Optional concentration" />
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editConc2Size">
+                    <option value="">Auto</option>
+                    <option value="32">32px</option>
+                    <option value="36">36px</option>
+                    <option value="42">42px</option>
+                    <option value="48">48px</option>
+                    <option value="56">56px</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Color</span>
+                  <div class="color-picker-group">
+                    <select id="editConc2Color">
+                      <option value="">Lime (default)</option>
+                      <option value="#FFFFFF">White</option>
+                      <option value="#F6A400">Orange</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editConc2ColorCustom" value="#76B82A" />
                   </div>
                 </label>
               </div>
@@ -192,7 +238,15 @@
               <div class="edit-field-row">
                 <label class="edit-field edit-field-grow">
                   <span>Category Badge</span>
-                  <input type="text" id="editBadgeText" placeholder="e.g. INSECTICIDE" />
+                  <select id="editBadgeText">
+                    <option value="INSECTICIDE" selected>INSECTICIDE</option>
+                    <option value="FUNGICIDE">FUNGICIDE</option>
+                    <option value="HERBICIDE">HERBICIDE</option>
+                    <option value="PGR">PGR</option>
+                    <option value="BIO PRODUCT">BIO PRODUCT</option>
+                    <option value="MICRONUTRIENT">MICRONUTRIENT</option>
+                    <option value="ADJUVANT">ADJUVANT</option>
+                  </select>
                 </label>
                 <label class="edit-field edit-field-color">
                   <span>Badge Color</span>
@@ -207,6 +261,46 @@
                       <option value="#18211D">Charcoal</option>
                     </select>
                     <input type="color" id="editBadgeColorCustom" value="#F6A400" />
+                  </div>
+                </label>
+              </div>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Crop Protection Claim</span>
+                  <select id="editClaimText">
+                    <option value="SYSTEMIC CROP PROTECTION" selected>SYSTEMIC CROP PROTECTION</option>
+                    <option value="BROAD SPECTRUM CROP PROTECTION">BROAD SPECTRUM CROP PROTECTION</option>
+                    <option value="ADVANCED CROP PROTECTION">ADVANCED CROP PROTECTION</option>
+                    <option value="PROFESSIONAL CROP PROTECTION">PROFESSIONAL CROP PROTECTION</option>
+                    <option value="HIGH EFFICACY CROP PROTECTION">HIGH EFFICACY CROP PROTECTION</option>
+                    <option value="RESIDUAL CROP PROTECTION">RESIDUAL CROP PROTECTION</option>
+                    <option value="TARGETED CROP PROTECTION">TARGETED CROP PROTECTION</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editClaimSize">
+                    <option value="">Auto</option>
+                    <option value="24">24px</option>
+                    <option value="28">28px</option>
+                    <option value="31">31px</option>
+                    <option value="34">34px</option>
+                    <option value="38">38px</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Color</span>
+                  <div class="color-picker-group">
+                    <select id="editClaimColor">
+                      <option value="">White</option>
+                      <option value="#76B82A">Lime</option>
+                      <option value="#F6A400">Orange</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editClaimColorCustom" value="#FFFFFF" />
                   </div>
                 </label>
               </div>
@@ -249,6 +343,7 @@
       </section>
     </main>
 
-    <script src="app.js?v=20260727-export-assets"></script>
+    <script src="products-data.js?v=20260727-sheet-products"></script>
+    <script src="app.js?v=20260727-print-modes"></script>
   </body>
 </html>

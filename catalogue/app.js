@@ -8,20 +8,26 @@ const categories = [
   { id: "adjuvants", name: "Adjuvants", colorName: "Grey", color: "#68706C" },
 ];
 
-const products = [
+const fallbackProducts = [
   {
     id: "aceman",
     categoryId: "insecticide",
     name: "ACEMAN",
     active: "ACETAMIPRID",
     concentration: "20.0% SP",
+    active2: "",
+    concentration2: "",
     formula: "ACETAMIPRID 20.0% SP",
-    mode: "Systemic + translaminar action",
     mockup: "assets/mockups/aceman-single-bottle-white-studio-base.png",
   },
 ];
 
-let selectedCategoryId = "insecticide";
+const products = Array.isArray(window.MERCBEX_PRODUCTS) && window.MERCBEX_PRODUCTS.length
+  ? window.MERCBEX_PRODUCTS
+  : fallbackProducts;
+products.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
+
+let selectedLetter = "all";
 let selectedProductId = "aceman";
 let selectedPreview = "studio";
 
@@ -30,30 +36,44 @@ const editOverrides = {
   name: "",
   active: "",
   concentration: "",
-  mode: "",
+  active2: "",
+  concentration2: "",
   panelColor: "",
   netContent: "1 L",
   // Font size overrides (empty = use auto sizing from labelSvg)
   nameSize: "",
   activeSize: "",
   concSize: "",
-  modeSize: "",
+  active2Size: "",
+  conc2Size: "",
   contentSize: "",
   badgeText: "",
   badgeColor: "",
+  claimText: "",
+  claimSize: "",
+  claimColor: "",
+  claimColorCustom: "",
 };
 
-const categoryList = document.querySelector("#categoryList");
+const alphaList = document.querySelector("#alphaList");
 const productsGrid = document.querySelector("#productsGrid");
-const categoryTitle = document.querySelector("#categoryTitle");
-const categoryPill = document.querySelector("#categoryPill");
+const productListTitle = document.querySelector("#productListTitle");
+const productListPill = document.querySelector("#productListPill");
 const selectedName = document.querySelector("#selectedName");
+const productSelect = document.querySelector("#productSelect");
+const productSearch = document.querySelector("#productSearch");
+const productCount = document.querySelector("#productCount");
 const labelPreview = document.querySelector("#labelPreview");
 const bottlePreview = document.querySelector("#bottlePreview");
 const downloadButton = document.querySelector("#downloadSvg");
 let zoomLevel = 100;
+let productSearchQuery = "";
 const printButton = document.querySelector("#printLabel");
 const previewTabs = document.querySelectorAll("[data-preview]");
+
+function syncPrintButtonLabel() {
+  printButton.textContent = selectedPreview === "label" ? "Print Label" : "Print Bottle";
+}
 
 function applyPreviewZoom() {
   document.getElementById("zoomValue").textContent = `${zoomLevel}%`;
@@ -106,8 +126,177 @@ function downloadSvgString(svgString, filename) {
 
   link.href = url;
   link.download = filename;
+  link.style.display = "none";
+  document.body.appendChild(link);
   link.click();
+  link.remove();
   URL.revokeObjectURL(url);
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function slugify(value) {
+  return String(value || "product")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "product";
+}
+
+function timestampForFilename(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join("");
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function canvasToBlob(canvas, type = "image/png", quality) {
+  return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+}
+
+function traceBottleLabelPath(ctx, x, y, width, height) {
+  const radius = 10;
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.048, y);
+  ctx.lineTo(x + width * 0.952, y);
+  ctx.lineTo(x + width * 0.982, y + height - radius);
+  ctx.quadraticCurveTo(x + width * 0.982, y + height, x + width * 0.982 - radius, y + height);
+  ctx.lineTo(x + width * 0.018 + radius, y + height);
+  ctx.quadraticCurveTo(x + width * 0.018, y + height, x + width * 0.018, y + height - radius);
+  ctx.lineTo(x + width * 0.048, y);
+  ctx.closePath();
+}
+
+async function saveStudioBottlePng() {
+  const product = productById(selectedProductId);
+  const productName = (editOverrides.name || "").trim() || product.name;
+  const baseImage = await loadImage(product.mockup);
+  const svgString = await serializedSelfContainedLabelSvg();
+  if (!svgString) return;
+
+  const exportScale = 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = baseImage.naturalWidth * exportScale;
+  canvas.height = baseImage.naturalHeight * exportScale;
+  const ctx = canvas.getContext("2d");
+
+  ctx.scale(exportScale, exportScale);
+  ctx.drawImage(baseImage, 0, 0, baseImage.naturalWidth, baseImage.naturalHeight);
+
+  const labelUrl = URL.createObjectURL(new Blob([svgString], { type: "image/svg+xml" }));
+  try {
+    const labelImage = await loadImage(labelUrl);
+    const bottleWidth = baseImage.naturalWidth;
+    const bottleHeight = baseImage.naturalHeight;
+    const labelX = bottleWidth * 0.122;
+    const labelY = bottleHeight * 0.391;
+    const labelWidth = bottleWidth * 0.756;
+    const labelHeight = labelWidth * 1.5;
+    const sideInset = labelWidth * 0.018;
+
+    ctx.save();
+    traceBottleLabelPath(ctx, labelX, labelY, labelWidth, labelHeight);
+    ctx.shadowColor = "rgba(0, 0, 0, 0.18)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 2.5;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.82)";
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    traceBottleLabelPath(ctx, labelX, labelY, labelWidth, labelHeight);
+    ctx.clip();
+    ctx.globalAlpha = 0.965;
+    ctx.globalCompositeOperation = "multiply";
+    ctx.drawImage(labelImage, labelX, labelY, labelWidth, labelHeight);
+
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+
+    const cylinderShade = ctx.createLinearGradient(labelX, labelY, labelX + labelWidth, labelY);
+    cylinderShade.addColorStop(0, "rgba(0, 0, 0, 0.13)");
+    cylinderShade.addColorStop(0.08, "rgba(0, 0, 0, 0.05)");
+    cylinderShade.addColorStop(0.24, "rgba(255, 255, 255, 0.10)");
+    cylinderShade.addColorStop(0.5, "rgba(255, 255, 255, 0.03)");
+    cylinderShade.addColorStop(0.77, "rgba(0, 0, 0, 0.03)");
+    cylinderShade.addColorStop(0.92, "rgba(0, 0, 0, 0.10)");
+    cylinderShade.addColorStop(1, "rgba(0, 0, 0, 0.18)");
+    ctx.fillStyle = cylinderShade;
+    ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
+
+    const laminate = ctx.createLinearGradient(labelX, labelY, labelX + labelWidth, labelY);
+    laminate.addColorStop(0, "rgba(255, 255, 255, 0.26)");
+    laminate.addColorStop(0.18, "rgba(255, 255, 255, 0.04)");
+    laminate.addColorStop(0.5, "rgba(255, 255, 255, 0.16)");
+    laminate.addColorStop(0.82, "rgba(255, 255, 255, 0.035)");
+    laminate.addColorStop(1, "rgba(255, 255, 255, 0.22)");
+    ctx.globalCompositeOperation = "screen";
+    ctx.fillStyle = laminate;
+    ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
+    ctx.globalCompositeOperation = "source-over";
+
+    const topPress = ctx.createLinearGradient(labelX, labelY, labelX, labelY + labelHeight * 0.09);
+    topPress.addColorStop(0, "rgba(0, 0, 0, 0.11)");
+    topPress.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = topPress;
+    ctx.fillRect(labelX, labelY, labelWidth, labelHeight * 0.09);
+
+    const edgeFalloff = ctx.createLinearGradient(labelX, labelY, labelX + labelWidth, labelY);
+    edgeFalloff.addColorStop(0, "rgba(255, 255, 255, 0.40)");
+    edgeFalloff.addColorStop(0.04, "rgba(255, 255, 255, 0)");
+    edgeFalloff.addColorStop(0.96, "rgba(255, 255, 255, 0)");
+    edgeFalloff.addColorStop(1, "rgba(255, 255, 255, 0.40)");
+    ctx.fillStyle = edgeFalloff;
+    ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
+    ctx.restore();
+
+    ctx.save();
+    traceBottleLabelPath(ctx, labelX, labelY, labelWidth, labelHeight);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.38)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.10)";
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(labelX + sideInset, labelY + 8);
+    ctx.lineTo(labelX + sideInset, labelY + labelHeight - 16);
+    ctx.moveTo(labelX + labelWidth - sideInset, labelY + 8);
+    ctx.lineTo(labelX + labelWidth - sideInset, labelY + labelHeight - 16);
+    ctx.stroke();
+    ctx.restore();
+  } finally {
+    URL.revokeObjectURL(labelUrl);
+  }
+
+  const blob = await canvasToBlob(canvas, "image/png");
+  if (!blob) return;
+  downloadBlob(blob, `mercbex-${slugify(productName)}-bottle-${timestampForFilename()}.png`);
 }
 
 window.serializedSelfContainedLabelSvg = serializedSelfContainedLabelSvg;
@@ -120,28 +309,66 @@ function productById(id) {
   return products.find((product) => product.id === id) || products[0];
 }
 
-function productsForCategory(categoryId) {
-  return products.filter((product) => product.categoryId === categoryId);
+function productInitial(product) {
+  const first = (product.name || "").trim().charAt(0).toUpperCase();
+  return /^[A-Z]$/.test(first) ? first : "#";
+}
+
+function productsForLetter(letter) {
+  if (letter === "all") return products;
+  return products.filter((product) => productInitial(product) === letter);
 }
 
 function setThemeColor(color) {
   document.documentElement.style.setProperty("--category-color", color);
 }
 
-function renderCategories() {
-  categoryList.innerHTML = categories
-    .map((category) => {
-      const isSelected = category.id === selectedCategoryId;
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function productMatchesSearch(product, query) {
+  if (!query) return true;
+  const haystack = [
+    product.name,
+    product.formula,
+    product.active,
+    product.concentration,
+    product.active2,
+    product.concentration2,
+  ].join(" ").toLowerCase();
+  return haystack.includes(query);
+}
+
+function availableLetters() {
+  return [...new Set(products.map(productInitial))].sort((a, b) => {
+    if (a === "#") return 1;
+    if (b === "#") return -1;
+    return a.localeCompare(b);
+  });
+}
+
+function renderAlphaList() {
+  const letters = ["all", ...availableLetters()];
+  alphaList.innerHTML = letters
+    .map((letter) => {
+      const isSelected = letter === selectedLetter;
+      const label = letter === "all" ? "All" : letter;
+      const count = letter === "all" ? products.length : productsForLetter(letter).length;
       return `
         <button
-          class="category-button"
+          class="alpha-button"
           type="button"
-          data-category-id="${category.id}"
+          data-letter="${letter}"
           aria-selected="${isSelected}"
-          style="--category-color: ${category.color}"
         >
-          <span>${category.name}</span>
-          <span class="category-swatch" aria-hidden="true"></span>
+          <span>${label}</span>
+          <span>${count}</span>
         </button>
       `;
     })
@@ -149,26 +376,40 @@ function renderCategories() {
 }
 
 function renderProducts() {
-  const category = categoryById(selectedCategoryId);
-  const visibleProducts = productsForCategory(selectedCategoryId);
+  const category = categoryById("insecticide");
+  const visibleProducts = productsForLetter(selectedLetter);
+  const query = productSearchQuery.trim().toLowerCase();
+  const filteredProducts = visibleProducts.filter((product) => productMatchesSearch(product, query));
 
-  categoryTitle.textContent = category.name;
-  categoryPill.textContent = category.colorName;
+  productListTitle.textContent = selectedLetter === "all" ? "Alphabetical" : selectedLetter;
+  productListPill.textContent = selectedLetter === "all" ? "A-Z" : `${filteredProducts.length} shown`;
+  productCount.textContent = `${filteredProducts.length} of ${visibleProducts.length} products`;
 
   if (!visibleProducts.length) {
+    productCount.textContent = "0 products";
     productsGrid.innerHTML = `
       <article class="product-card" aria-selected="false">
-        <span class="product-category" style="--category-color: ${category.color}">${category.name}</span>
         <h3>Coming Soon</h3>
-        <p class="formula">Use the ACEMAN master preview to create and test future labels.</p>
+        <p class="formula">No products are available for this alphabet group.</p>
       </article>
     `;
     return;
   }
 
-  productsGrid.innerHTML = visibleProducts
+  if (!filteredProducts.length) {
+    productsGrid.innerHTML = `
+      <article class="product-card product-card-empty" aria-selected="false">
+        <h3>No products found</h3>
+        <p class="formula">Try another product name, ingredient, or formula.</p>
+      </article>
+    `;
+    return;
+  }
+
+  productsGrid.innerHTML = filteredProducts
     .map((product) => {
       const isSelected = product.id === selectedProductId;
+      const secondaryFormula = [product.active2, product.concentration2].filter(Boolean).join(" ");
       return `
         <button
           class="product-card"
@@ -179,11 +420,12 @@ function renderProducts() {
         >
           <div class="product-card-content">
             <div>
-              <span class="product-category">${category.name}</span>
-              <h3>${product.name}</h3>
-              <p class="formula">${product.formula}</p>
+              <span class="product-category">${escapeHtml(category.name)}</span>
+              <h3>${escapeHtml(product.name)}</h3>
+              <p class="formula">${escapeHtml(product.active)} <strong>${escapeHtml(product.concentration)}</strong></p>
+              ${secondaryFormula ? `<p class="formula formula-secondary">${escapeHtml(secondaryFormula)}</p>` : ""}
             </div>
-            ${product.mockup ? `<img class="product-mockup-thumb" src="${product.mockup}" alt="${product.name} bottle mockup base" />` : `<div class="mockup-pending">Mockup<br />pending</div>`}
+            <span class="product-select-indicator" aria-hidden="true">Select</span>
           </div>
         </button>
       `;
@@ -191,31 +433,57 @@ function renderProducts() {
     .join("");
 }
 
+function renderProductSelect() {
+  productSelect.innerHTML = products
+    .map((product) => `
+      <option value="${product.id}" ${product.id === selectedProductId ? "selected" : ""}>
+        ${product.name}
+      </option>
+    `)
+    .join("");
+}
+
+function clearProductContentOverrides() {
+  ["name", "active", "concentration", "active2", "concentration2"].forEach((field) => {
+    editOverrides[field] = "";
+  });
+}
+
 function labelSvg(product, category, overrides = {}) {
   const overrideName = (overrides.name || "").trim() || product.name;
   const overrideActive = (overrides.active || "").trim() || product.active;
   const overrideConc = (overrides.concentration || "").trim() || product.concentration;
-  const overrideMode = (overrides.mode || "").trim() || product.mode;
+  const overrideActive2 = (overrides.active2 || "").trim() || product.active2 || "";
+  const overrideConc2 = (overrides.concentration2 || "").trim() || product.concentration2 || "";
   const overrideColor = (overrides.panelColor || "").trim() || category.color;
   const overrideNetContent = (overrides.netContent || "").trim() || "1 L";
 
   // Net content font sizing — manual override or auto based on length
-  const netContentSize = (overrides.contentSize || "").trim() || (overrideNetContent.length > 6 ? 62 : overrideNetContent.length > 4 ? 76 : 92);
+  const netContentSize = (overrides.contentSize || "").trim() || "52";
 
   // Use manual font size if set, otherwise auto-size based on length
   const productSize = (overrides.nameSize || "").trim() || (overrideName.length > 7 ? 132 : overrideName.length > 5 ? 146 : 162);
   const activeSize = (overrides.activeSize || "").trim() || (overrideActive.length > 13 ? 34 : 42);
   const concSize = (overrides.concSize || "").trim() || "42";
-  const modeSize = (overrides.modeSize || "").trim() || "31";
+  const active2Size = (overrides.active2Size || "").trim() || activeSize;
+  const conc2Size = (overrides.conc2Size || "").trim() || concSize;
 
   // Color overrides — custom color picker wins over dropdown preset
   const nameColor = (overrides.nameColorCustom || overrides.nameColor || "").trim();
   const activeColor = (overrides.activeColorCustom || overrides.activeColor || "").trim();
   const concColor = (overrides.concColorCustom || overrides.concColor || "").trim();
-  const modeColor = (overrides.modeColorCustom || overrides.modeColor || "").trim();
+  const active2Color = (overrides.active2ColorCustom || overrides.active2Color || "").trim();
+  const conc2Color = (overrides.conc2ColorCustom || overrides.conc2Color || "").trim();
   const categoryLabel = ((overrides.badgeText || "").trim() || category.name).toUpperCase();
   const badgeColor = (overrides.badgeColorCustom || overrides.badgeColor || "").trim() || "#F6A400";
+  const claimText = ((overrides.claimText || "").trim() || "SYSTEMIC CROP PROTECTION").toUpperCase();
+  const claimSize = (overrides.claimSize || "").trim() || "31";
+  const claimColor = (overrides.claimColorCustom || overrides.claimColor || "").trim();
   const panelColor = overrideColor;
+  const secondaryIngredientMarkup = overrideActive2 || overrideConc2 ? `
+      ${overrideActive2 ? `<text x="0" y="452" class="font" font-size="${active2Size}" font-weight="650" letter-spacing="0" fill="${active2Color || '#FFFFFF'}">${overrideActive2}</text>` : ""}
+      ${overrideConc2 ? `<text x="0" y="${overrideActive2 ? 528 : 452}" class="font" font-size="${conc2Size}" font-weight="750" fill="${conc2Color || '#76B82A'}">${overrideConc2}</text>` : ""}
+    ` : "";
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 1200 1800" role="img" aria-label="MERCBEX ${overrideName} print label">
@@ -270,12 +538,12 @@ function labelSvg(product, category, overrides = {}) {
     </g>
 
     <g transform="translate(220 438)">
-      <text x="0" y="0" class="font small white" font-weight="600">SYSTEMIC CROP PROTECTION</text>
+      <text x="0" y="0" class="font" font-size="${claimSize}" font-weight="600" fill="${claimColor || '#FFFFFF'}">${claimText}</text>
       <text x="0" y="176" class="font" font-size="${productSize}" font-weight="820" letter-spacing="0" fill="${nameColor || '#FFFFFF'}">${overrideName}</text>
       <path d="M0 218 C160 246 335 246 536 218" stroke="#FFFFFF" stroke-width="9" fill="none" opacity="0.45"/>
       <text x="0" y="314" class="font" font-size="${activeSize}" font-weight="650" letter-spacing="0" fill="${activeColor || '#FFFFFF'}">${overrideActive}</text>
       <text x="0" y="390" class="font" font-size="${concSize}" font-weight="750" fill="${concColor || '#76B82A'}">${overrideConc}</text>
-      <text x="0" y="448" class="font" font-size="${modeSize}" font-weight="500" fill="${modeColor || '#FFFFFF'}">Mode of action: ${overrideMode}</text>
+      ${secondaryIngredientMarkup}
     </g>
 
     <path d="M108 1206 C250 1132 399 1116 581 1178 C758 1238 935 1222 1092 1164 L1092 1500 C926 1538 750 1538 580 1482 C392 1419 252 1436 108 1512 Z" fill="#F7F9F8"/>
@@ -307,9 +575,6 @@ function labelSvg(product, category, overrides = {}) {
     <g transform="translate(220 1550)">
       <text x="0" y="0" class="font micro grey" font-weight="650">NET CONTENT</text>
       <text x="0" y="54" class="font" font-size="${netContentSize}" font-weight="760" fill="${panelColor}">${overrideNetContent}</text>
-      <text x="218" y="20" class="font micro charcoal" font-weight="650">MERCBEX Chemical Science LLP</text>
-      <text x="218" y="58" class="font micro grey" font-weight="500">Reg. / Batch / Mfg / Exp / MRP</text>
-      <text x="218" y="96" class="font micro grey" font-weight="500">Mfr. address / Customer care</text>
     </g>
 
     <g transform="translate(846 1454)">
@@ -318,8 +583,8 @@ function labelSvg(product, category, overrides = {}) {
     </g>
 
     <rect x="108" y="1670" width="984" height="58" fill="#18211D"/>
-    <text x="220" y="1708" class="font micro white" font-weight="600">READ LABEL BEFORE USE</text>
-    <text x="740" y="1708" class="font micro white" font-weight="500">FOR AGRICULTURAL USE</text>
+    <text x="212" y="1708" class="font white" font-size="22" font-weight="600">AN ISO 9001, 2026 CERTIFIED COMPANY</text>
+    <text x="990" y="1708" text-anchor="end" class="font white" font-size="22" font-weight="500">FOR AGRICULTURAL USE</text>
   </g>
 </svg>`;
 }
@@ -332,24 +597,32 @@ function renderLabel() {
     name: editOverrides.name || product.name,
     active: editOverrides.active || product.active,
     concentration: editOverrides.concentration || product.concentration,
-    mode: editOverrides.mode || product.mode,
+    active2: editOverrides.active2 || product.active2,
+    concentration2: editOverrides.concentration2 || product.concentration2,
     panelColor: editOverrides.panelColor || category.color,
     netContent: editOverrides.netContent || "1 L",
     nameSize: editOverrides.nameSize || "",
     activeSize: editOverrides.activeSize || "",
     concSize: editOverrides.concSize || "",
-    modeSize: editOverrides.modeSize || "",
+    active2Size: editOverrides.active2Size || "",
+    conc2Size: editOverrides.conc2Size || "",
     contentSize: editOverrides.contentSize || "",
     badgeText: editOverrides.badgeText || "",
     badgeColor: editOverrides.badgeColor || "",
+    claimText: editOverrides.claimText || "",
+    claimSize: editOverrides.claimSize || "",
+    claimColor: editOverrides.claimColor || "",
+    claimColorCustom: editOverrides.claimColorCustom || "",
     nameColor: editOverrides.nameColor || "",
     nameColorCustom: editOverrides.nameColorCustom || "",
     activeColor: editOverrides.activeColor || "",
     activeColorCustom: editOverrides.activeColorCustom || "",
     concColor: editOverrides.concColor || "",
     concColorCustom: editOverrides.concColorCustom || "",
-    modeColor: editOverrides.modeColor || "",
-    modeColorCustom: editOverrides.modeColorCustom || "",
+    active2Color: editOverrides.active2Color || "",
+    active2ColorCustom: editOverrides.active2ColorCustom || "",
+    conc2Color: editOverrides.conc2Color || "",
+    conc2ColorCustom: editOverrides.conc2ColorCustom || "",
     badgeColorCustom: editOverrides.badgeColorCustom || "",
   };
 
@@ -361,25 +634,33 @@ function renderLabel() {
   document.getElementById("editProductName").value = editOverrides.name || product.name;
   document.getElementById("editActive").value = editOverrides.active || product.active;
   document.getElementById("editConcentration").value = editOverrides.concentration || product.concentration;
-  document.getElementById("editMode").value = editOverrides.mode || product.mode;
+  document.getElementById("editActive2").value = editOverrides.active2 || product.active2;
+  document.getElementById("editConcentration2").value = editOverrides.concentration2 || product.concentration2;
   document.getElementById("editColor").value = activeOverrides.panelColor;
   document.getElementById("editNetContent").value = editOverrides.netContent || "1 L";
   document.getElementById("editNameSize").value = editOverrides.nameSize || "";
   document.getElementById("editActiveSize").value = editOverrides.activeSize || "";
   document.getElementById("editConcSize").value = editOverrides.concSize || "";
-  document.getElementById("editModeSize").value = editOverrides.modeSize || "";
+  document.getElementById("editActive2Size").value = editOverrides.active2Size || "";
+  document.getElementById("editConc2Size").value = editOverrides.conc2Size || "";
   document.getElementById("editContentSize").value = editOverrides.contentSize || "";
-  document.getElementById("editBadgeText").value = editOverrides.badgeText || "";
+  document.getElementById("editBadgeText").value = editOverrides.badgeText || "INSECTICIDE";
   document.getElementById("editBadgeColor").value = editOverrides.badgeColor || "";
   document.getElementById("editBadgeColorCustom").value = editOverrides.badgeColorCustom || "#F6A400";
+  document.getElementById("editClaimText").value = editOverrides.claimText || "SYSTEMIC CROP PROTECTION";
+  document.getElementById("editClaimSize").value = editOverrides.claimSize || "";
+  document.getElementById("editClaimColor").value = editOverrides.claimColor || "";
+  document.getElementById("editClaimColorCustom").value = editOverrides.claimColorCustom || "#FFFFFF";
   document.getElementById("editNameColor").value = editOverrides.nameColor || "";
   document.getElementById("editNameColorCustom").value = editOverrides.nameColorCustom || "#FFFFFF";
   document.getElementById("editActiveColor").value = editOverrides.activeColor || "";
   document.getElementById("editActiveColorCustom").value = editOverrides.activeColorCustom || "#FFFFFF";
   document.getElementById("editConcColor").value = editOverrides.concColor || "";
   document.getElementById("editConcColorCustom").value = editOverrides.concColorCustom || "#76B82A";
-  document.getElementById("editModeColor").value = editOverrides.modeColor || "";
-  document.getElementById("editModeColorCustom").value = editOverrides.modeColorCustom || "#FFFFFF";
+  document.getElementById("editActive2Color").value = editOverrides.active2Color || "";
+  document.getElementById("editActive2ColorCustom").value = editOverrides.active2ColorCustom || "#FFFFFF";
+  document.getElementById("editConc2Color").value = editOverrides.conc2Color || "";
+  document.getElementById("editConc2ColorCustom").value = editOverrides.conc2ColorCustom || "#76B82A";
   const studioMarkup = product.mockup ? `
       <figure class="bottle-composite" aria-label="${activeOverrides.name} live studio bottle preview">
         <div class="bottle-image-wrap">
@@ -405,7 +686,7 @@ function renderLabel() {
   bottlePreview.innerHTML = studioMarkup;
   labelPreview.hidden = selectedPreview !== "label";
   bottlePreview.hidden = selectedPreview === "label";
-  downloadButton.disabled = selectedPreview !== "label";
+  downloadButton.disabled = false;
 
   applyPreviewZoom();
 }
@@ -426,15 +707,16 @@ function renderEmptyLabel(category) {
 }
 
 function updateView() {
-  const visibleProducts = productsForCategory(selectedCategoryId);
+  const visibleProducts = productsForLetter(selectedLetter);
 
   if (!visibleProducts.some((product) => product.id === selectedProductId)) {
     selectedProductId = visibleProducts[0]?.id || selectedProductId;
   }
 
-  const category = categoryById(selectedCategoryId);
+  const category = categoryById("insecticide");
   setThemeColor(category.color);
-  renderCategories();
+  renderAlphaList();
+  renderProductSelect();
   renderProducts();
 
   if (visibleProducts.length) {
@@ -444,12 +726,14 @@ function updateView() {
   }
 }
 
-categoryList.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-category-id]");
+alphaList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-letter]");
   if (!button) return;
 
-  selectedCategoryId = button.dataset.categoryId;
-  const firstProduct = productsForCategory(selectedCategoryId)[0];
+  selectedLetter = button.dataset.letter;
+  productSearchQuery = "";
+  productSearch.value = "";
+  const firstProduct = productsForLetter(selectedLetter)[0];
   if (firstProduct) selectedProductId = firstProduct.id;
   updateView();
 });
@@ -459,8 +743,26 @@ productsGrid.addEventListener("click", (event) => {
   if (!button) return;
 
   selectedProductId = button.dataset.productId;
+  clearProductContentOverrides();
   renderProducts();
   renderLabel();
+});
+
+productSelect.addEventListener("change", (event) => {
+  selectedProductId = event.target.value;
+  const product = productById(selectedProductId);
+  selectedLetter = productInitial(product);
+  productSearchQuery = "";
+  productSearch.value = "";
+  clearProductContentOverrides();
+  renderAlphaList();
+  renderProducts();
+  renderLabel();
+});
+
+productSearch.addEventListener("input", (event) => {
+  productSearchQuery = event.target.value;
+  renderProducts();
 });
 
 // --- Preview tab handlers ---
@@ -471,6 +773,7 @@ previewTabs.forEach((tab) => {
     previewTabs.forEach((button) => {
       button.setAttribute("aria-selected", String(button === tab));
     });
+    syncPrintButtonLabel();
     renderLabel();
   });
 });
@@ -487,28 +790,36 @@ function applyOverride(field) {
 document.getElementById("editProductName").addEventListener("input", applyOverride("name"));
 document.getElementById("editActive").addEventListener("input", applyOverride("active"));
 document.getElementById("editConcentration").addEventListener("input", applyOverride("concentration"));
-document.getElementById("editMode").addEventListener("input", applyOverride("mode"));
+document.getElementById("editActive2").addEventListener("input", applyOverride("active2"));
+document.getElementById("editConcentration2").addEventListener("input", applyOverride("concentration2"));
 document.getElementById("editColor").addEventListener("input", applyOverride("panelColor"));
 document.getElementById("editNetContent").addEventListener("change", applyOverride("netContent"));
 
 document.getElementById("editNameSize").addEventListener("change", applyOverride("nameSize"));
 document.getElementById("editActiveSize").addEventListener("change", applyOverride("activeSize"));
 document.getElementById("editConcSize").addEventListener("change", applyOverride("concSize"));
-document.getElementById("editModeSize").addEventListener("change", applyOverride("modeSize"));
+document.getElementById("editActive2Size").addEventListener("change", applyOverride("active2Size"));
+document.getElementById("editConc2Size").addEventListener("change", applyOverride("conc2Size"));
 document.getElementById("editContentSize").addEventListener("change", applyOverride("contentSize"));
-document.getElementById("editBadgeText").addEventListener("input", applyOverride("badgeText"));
+document.getElementById("editBadgeText").addEventListener("change", applyOverride("badgeText"));
 document.getElementById("editBadgeColor").addEventListener("change", applyOverride("badgeColor"));
+document.getElementById("editClaimText").addEventListener("change", applyOverride("claimText"));
+document.getElementById("editClaimSize").addEventListener("change", applyOverride("claimSize"));
+document.getElementById("editClaimColor").addEventListener("change", applyOverride("claimColor"));
 document.getElementById("editNameColor").addEventListener("change", applyOverride("nameColor"));
 document.getElementById("editActiveColor").addEventListener("change", applyOverride("activeColor"));
 document.getElementById("editConcColor").addEventListener("change", applyOverride("concColor"));
-document.getElementById("editModeColor").addEventListener("change", applyOverride("modeColor"));
+document.getElementById("editActive2Color").addEventListener("change", applyOverride("active2Color"));
+document.getElementById("editConc2Color").addEventListener("change", applyOverride("conc2Color"));
 
 // Custom color pickers
 document.getElementById("editBadgeColorCustom").addEventListener("input", applyOverride("badgeColorCustom"));
+document.getElementById("editClaimColorCustom").addEventListener("input", applyOverride("claimColorCustom"));
 document.getElementById("editNameColorCustom").addEventListener("input", applyOverride("nameColorCustom"));
 document.getElementById("editActiveColorCustom").addEventListener("input", applyOverride("activeColorCustom"));
 document.getElementById("editConcColorCustom").addEventListener("input", applyOverride("concColorCustom"));
-document.getElementById("editModeColorCustom").addEventListener("input", applyOverride("modeColorCustom"));
+document.getElementById("editActive2ColorCustom").addEventListener("input", applyOverride("active2ColorCustom"));
+document.getElementById("editConc2ColorCustom").addEventListener("input", applyOverride("conc2ColorCustom"));
 
 document.getElementById("resetEditPanel").addEventListener("click", () => {
   Object.keys(editOverrides).forEach((k) => { editOverrides[k] = k === "netContent" ? "1 L" : ""; });
@@ -516,7 +827,6 @@ document.getElementById("resetEditPanel").addEventListener("click", () => {
 });
 
 downloadButton.addEventListener("click", async () => {
-  if (downloadButton.disabled) return;
   const product = productById(selectedProductId);
   const downloadName = (editOverrides.name || "").trim() || product.name;
   const svgString = await serializedSelfContainedLabelSvg();
@@ -550,21 +860,31 @@ document.getElementById("saveLabel").addEventListener("click", async () => {
   }, 2000);
 });
 
+document.getElementById("saveBottle").addEventListener("click", async () => {
+  const btn = document.getElementById("saveBottle");
+  const origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+  try {
+    await saveStudioBottlePng();
+    btn.textContent = "Saved!";
+  } finally {
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = origText;
+    }, 1600);
+  }
+});
+
 printButton.addEventListener("click", () => {
-  selectedPreview = "label";
-  previewTabs.forEach((button) => {
-    button.setAttribute("aria-selected", String(button.dataset.preview === "label"));
-  });
+  document.body.dataset.printMode = selectedPreview === "label" ? "label" : "bottle";
   renderLabel();
   window.print();
 });
 
 window.addEventListener("afterprint", () => {
-  selectedPreview = "studio";
-  previewTabs.forEach((button) => {
-    button.setAttribute("aria-selected", String(button.dataset.preview === "studio"));
-  });
-  renderLabel();
+  delete document.body.dataset.printMode;
 });
 
 updateView();
+syncPrintButtonLabel();
