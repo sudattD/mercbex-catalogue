@@ -36,56 +36,214 @@
             <h2 id="selectedName">ACEMAN</h2>
           </div>
           <div class="toolbar-actions">
+            <div class="preview-tabs" role="tablist" aria-label="Preview type">
+              <button class="preview-tab" type="button" data-preview="label" aria-selected="true">Label</button>
+              <button class="preview-tab" type="button" data-preview="bottle" aria-selected="false">Bottle</button>
+            </div>
             <button id="downloadSvg" type="button">Download SVG</button>
+            <button id="saveLabel" type="button" class="save-button">Save Label</button>
             <button id="printLabel" type="button">Print</button>
-            <button id="toggleEditPanel" type="button" class="edit-toggle" aria-pressed="false">Customize</button>
+            <label class="zoom-control">
+              <span class="zoom-label" id="zoomValue">100%</span>
+              <input type="range" id="zoomSlider" min="25" max="200" value="100" />
+            </label>
           </div>
         </div>
 
-        <div id="editPanel" class="edit-panel" hidden>
-          <div class="edit-fields">
-            <label class="edit-field">
-              <span>Product Name</span>
-              <input type="text" id="editProductName" />
-            </label>
-            <label class="edit-field">
-              <span>Active Ingredient</span>
-              <input type="text" id="editActive" />
-            </label>
-            <label class="edit-field">
-              <span>Concentration</span>
-              <input type="text" id="editConcentration" />
-            </label>
-            <label class="edit-field">
-              <span>Mode of Action</span>
-              <input type="text" id="editMode" />
-            </label>
-            <label class="edit-field">
-              <span>Panel Color</span>
-              <input type="color" id="editColor" value="#006B46" />
-            </label>
-            <label class="edit-field">
-              <span>Net Content</span>
-              <select id="editNetContent">
-                <option value="100 mL">100 mL</option>
-                <option value="250 mL">250 mL</option>
-                <option value="500 mL">500 mL</option>
-                <option value="1 L" selected>1 L</option>
-                <option value="5 L">5 L</option>
-              </select>
-            </label>
+        <div class="stage-body">
+          <div class="edit-panel">
+            <div class="edit-panel-header">Customize Label</div>
+            <div class="edit-fields">
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Product Name</span>
+                  <input type="text" id="editProductName" />
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editNameSize">
+                    <option value="">Auto</option>
+                    <option value="80">80px</option>
+                    <option value="100">100px</option>
+                    <option value="120">120px</option>
+                    <option value="132">132px</option>
+                    <option value="146">146px</option>
+                    <option value="162">162px</option>
+                    <option value="180">180px</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Color</span>
+                  <div class="color-picker-group">
+                    <select id="editNameColor">
+                      <option value="">White</option>
+                      <option value="#76B82A">Lime</option>
+                      <option value="#F6A400">Orange</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editNameColorCustom" value="#FFFFFF" />
+                  </div>
+                </label>
+              </div>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Active Ingredient</span>
+                  <input type="text" id="editActive" />
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editActiveSize">
+                    <option value="">Auto</option>
+                    <option value="28">28px</option>
+                    <option value="32">32px</option>
+                    <option value="34">34px</option>
+                    <option value="38">38px</option>
+                    <option value="42">42px</option>
+                    <option value="48">48px</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Color</span>
+                  <div class="color-picker-group">
+                    <select id="editActiveColor">
+                      <option value="">White</option>
+                      <option value="#76B82A">Lime</option>
+                      <option value="#F6A400">Orange</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editActiveColorCustom" value="#FFFFFF" />
+                  </div>
+                </label>
+              </div>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Concentration</span>
+                  <input type="text" id="editConcentration" />
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editConcSize">
+                    <option value="">Auto</option>
+                    <option value="32">32px</option>
+                    <option value="36">36px</option>
+                    <option value="42">42px</option>
+                    <option value="48">48px</option>
+                    <option value="56">56px</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Color</span>
+                  <div class="color-picker-group">
+                    <select id="editConcColor">
+                      <option value="">Lime (default)</option>
+                      <option value="#FFFFFF">White</option>
+                      <option value="#F6A400">Orange</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editConcColorCustom" value="#76B82A" />
+                  </div>
+                </label>
+              </div>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Mode of Action</span>
+                  <input type="text" id="editMode" />
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editModeSize">
+                    <option value="">Auto</option>
+                    <option value="22">22px</option>
+                    <option value="26">26px</option>
+                    <option value="31">31px</option>
+                    <option value="36">36px</option>
+                    <option value="42">42px</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Color</span>
+                  <div class="color-picker-group">
+                    <select id="editModeColor">
+                      <option value="">White</option>
+                      <option value="#76B82A">Lime</option>
+                      <option value="#F6A400">Orange</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editModeColorCustom" value="#FFFFFF" />
+                  </div>
+                </label>
+              </div>
+              <label class="edit-field">
+                <span>Panel Color</span>
+                <input type="color" id="editColor" value="#006B46" />
+              </label>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Category Badge</span>
+                  <input type="text" id="editBadgeText" placeholder="e.g. INSECTICIDE" />
+                </label>
+                <label class="edit-field edit-field-color">
+                  <span>Badge Color</span>
+                  <div class="color-picker-group">
+                    <select id="editBadgeColor">
+                      <option value="#F6A400" selected>Orange</option>
+                      <option value="#76B82A">Lime</option>
+                      <option value="#006B46">Green</option>
+                      <option value="#E97822">Deep Orange</option>
+                      <option value="#1F5FAE">Blue</option>
+                      <option value="#6B4FB3">Purple</option>
+                      <option value="#18211D">Charcoal</option>
+                    </select>
+                    <input type="color" id="editBadgeColorCustom" value="#F6A400" />
+                  </div>
+                </label>
+              </div>
+              <div class="edit-field-row">
+                <label class="edit-field edit-field-grow">
+                  <span>Net Content</span>
+                  <select id="editNetContent">
+                    <option value="100 mL">100 mL</option>
+                    <option value="250 mL">250 mL</option>
+                    <option value="500 mL">500 mL</option>
+                    <option value="1 L" selected>1 L</option>
+                    <option value="5 L">5 L</option>
+                  </select>
+                </label>
+                <label class="edit-field edit-field-sm">
+                  <span>Size</span>
+                  <select id="editContentSize">
+                    <option value="">Auto</option>
+                    <option value="40">40px</option>
+                    <option value="46">46px</option>
+                    <option value="52">52px</option>
+                    <option value="62">62px</option>
+                    <option value="72">72px</option>
+                    <option value="76">76px</option>
+                    <option value="82">82px</option>
+                    <option value="92">92px</option>
+                    <option value="100">100px</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <button id="resetEditPanel" type="button" class="edit-reset">Reset to defaults</button>
           </div>
-          <button id="resetEditPanel" type="button" class="edit-reset">Reset to defaults</button>
-        </div>
 
-        <div class="label-frame">
-          <div class="preview-slot">
-            <span class="preview-slot-label">Print Label</span>
+          <div class="label-frame">
             <div id="labelPreview" class="label-preview"></div>
-          </div>
-          <div class="preview-slot">
-            <span class="preview-slot-label">Bottle Mockup</span>
-            <div id="bottlePreview" class="bottle-preview"></div>
+            <div id="bottlePreview" class="bottle-preview" hidden></div>
           </div>
         </div>
       </section>

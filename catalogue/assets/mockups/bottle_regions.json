@@ -1,0 +1,28 @@
+{
+  "bottle_dimensions": [1315, 1197],
+  "label_rect": {
+    "x1": 188,
+    "y1": 275,
+    "x2": 1132,
+    "y2": 938
+  },
+  "label_aspect": {
+    "target_width_pct": 0.72,
+    "target_height_pct": 0.88,
+    "center_x_offset": 0.0,
+    "center_y_offset": 0.0
+  },
+  "curvature": {
+    "strength": 0.038,
+    "vertical_perspective": 0.0
+  },
+  "mask_margin": {
+    "inner": 8,
+    "outer": 3
+  },
+  "lighting": {
+    "highlight_opacity": 0.10,
+    "shadow_opacity": 0.06,
+    "specular_width_pct": 0.28
+  }
+}

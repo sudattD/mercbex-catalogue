@@ -1,31 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 1200 1800" role="img" aria-label="MERCBEX ACEMAN insecticide front label master artwork">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 1200 1800" role="img" aria-label="MERCBEX ACEMAN print label">
   <defs>
     <style>
-      .font { font-family: Montserrat, Aptos, Avenir Next, Arial, sans-serif; }
-      .panel { fill: #006B46; }
-      .logoGreen { fill: #007A3D; }
+      .font { font-family: Montserrat, Aptos, "Avenir Next", Arial, sans-serif; }
+      .white { fill: #ffffff; }
       .lime { fill: #76B82A; }
       .orange { fill: #F6A400; }
-      .silver { fill: #BFC5C8; }
       .charcoal { fill: #18211D; }
       .grey { fill: #66716D; }
-      .white { fill: #FFFFFF; }
       .micro { font-size: 24px; letter-spacing: 0; }
       .small { font-size: 31px; letter-spacing: 0; }
       .medium { font-size: 42px; letter-spacing: 0; }
-      .brand { font-size: 90px; letter-spacing: 0; font-weight: 700; }
-      .product { font-size: 162px; letter-spacing: 0; font-weight: 820; }
       .pack { font-size: 92px; letter-spacing: 0; font-weight: 760; }
     </style>
-
-    <clipPath id="labelClip">
-      <rect x="108" y="72" width="984" height="1656" rx="42"/>
-    </clipPath>
-
-    <clipPath id="panelClip">
-      <path d="M108 290 C270 240 421 256 570 298 C755 351 904 334 1092 246 L1092 1164 C935 1222 758 1238 581 1178 C399 1116 251 1132 108 1206 Z"/>
-    </clipPath>
-
+    <clipPath id="labelClip"><rect x="108" y="72" width="984" height="1656" rx="42"/></clipPath>
+    <clipPath id="panelClip"><path d="M108 290 C270 240 421 256 570 298 C755 351 904 334 1092 246 L1092 1164 C935 1222 758 1238 581 1178 C399 1116 251 1132 108 1206 Z"/></clipPath>
     <pattern id="molecules" width="172" height="148" patternUnits="userSpaceOnUse">
       <circle cx="30" cy="30" r="5" fill="#FFFFFF" opacity="0.16"/>
       <circle cx="94" cy="48" r="4" fill="#76B82A" opacity="0.28"/>
@@ -38,21 +27,17 @@
 
   <rect width="1200" height="1800" fill="#F4F6F4"/>
   <rect x="108" y="72" width="984" height="1656" rx="42" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="4"/>
-
   <g clip-path="url(#labelClip)">
     <rect x="108" y="72" width="984" height="1656" fill="#FFFFFF"/>
-
-    <image href="mercbex-logo.png" x="390" y="112" width="420" height="153" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../brand-system/mercbex-logo.png" x="390" y="112" width="420" height="153" preserveAspectRatio="xMidYMid meet"/>
 
     <path d="M108 290 C270 240 421 256 570 298 C755 351 904 334 1092 246 L1092 1164 C935 1222 758 1238 581 1178 C399 1116 251 1132 108 1206 Z" fill="#006B46"/>
-
     <g clip-path="url(#panelClip)">
       <path d="M100 380 C290 294 470 338 642 393 C790 441 930 423 1100 330" stroke="#FFFFFF" stroke-width="20" opacity="0.28" fill="none"/>
       <path d="M100 460 C300 382 462 414 638 470 C800 521 934 502 1100 420" stroke="#FFFFFF" stroke-width="6" opacity="0.22" fill="none"/>
       <path d="M100 540 C308 466 468 496 640 554 C800 608 936 590 1100 510" stroke="#FFFFFF" stroke-width="5" opacity="0.16" fill="none"/>
       <path d="M100 1042 C315 960 468 995 636 1051 C790 1103 940 1085 1100 1005" stroke="#FFFFFF" stroke-width="14" opacity="0.32" fill="none"/>
       <path d="M100 1130 C296 1050 456 1076 632 1136 C790 1190 940 1170 1100 1090" stroke="#FFFFFF" stroke-width="5" opacity="0.18" fill="none"/>
-
       <rect x="724" y="382" width="368" height="600" fill="url(#molecules)" opacity="0.95"/>
       <path d="M890 470 C970 580 960 690 875 790 C820 690 825 575 890 470 Z" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.18"/>
       <path d="M885 512 C883 600 880 695 875 775" stroke="#FFFFFF" stroke-width="3" opacity="0.16"/>
@@ -61,17 +46,17 @@
     </g>
 
     <g transform="translate(220 320)">
-      <rect x="0" y="0" width="232" height="58" rx="29" fill="#006B46"/>
-      <text x="116" y="38" text-anchor="middle" class="font micro white" font-weight="700">INSECTICIDE</text>
+      <rect x="0" y="0" width="232" height="58" rx="29" fill="#F6A400"/>
+      <text x="116.0" y="38" text-anchor="middle" class="font micro white" font-weight="700">INSECTICIDE</text>
     </g>
 
     <g transform="translate(220 438)">
       <text x="0" y="0" class="font small white" font-weight="600">SYSTEMIC CROP PROTECTION</text>
-      <text x="0" y="176" class="font product white">ACEMAN</text>
+      <text x="0" y="176" class="font" font-size="146" font-weight="820" letter-spacing="0" fill="#FFFFFF">ACEMAN</text>
       <path d="M0 218 C160 246 335 246 536 218" stroke="#FFFFFF" stroke-width="9" fill="none" opacity="0.45"/>
-      <text x="0" y="314" class="font medium white" font-weight="650">ACETAMIPRID</text>
-      <text x="0" y="380" class="font medium lime" font-weight="750">20.0% SP</text>
-      <text x="0" y="448" class="font small white" font-weight="500">Mode of action: Systemic + translaminar action</text>
+      <text x="0" y="314" class="font" font-size="42" font-weight="650" letter-spacing="0" fill="#FFFFFF">ACETAMIPRID</text>
+      <text x="0" y="390" class="font" font-size="42" font-weight="750" fill="#76B82A">20.0% SP</text>
+      <text x="0" y="448" class="font" font-size="31" font-weight="500" fill="#FFFFFF">Mode of action: Systemic + translaminar action</text>
     </g>
 
     <path d="M108 1206 C250 1132 399 1116 581 1178 C758 1238 935 1222 1092 1164 L1092 1500 C926 1538 750 1538 580 1482 C392 1419 252 1436 108 1512 Z" fill="#F7F9F8"/>
@@ -102,7 +87,7 @@
 
     <g transform="translate(220 1550)">
       <text x="0" y="0" class="font micro grey" font-weight="650">NET CONTENT</text>
-      <text x="0" y="76" class="font pack logoGreen">1 L</text>
+      <text x="0" y="54" class="font" font-size="92" font-weight="760" fill="#006B46">1 L</text>
       <text x="218" y="20" class="font micro charcoal" font-weight="650">MERCBEX Chemical Science LLP</text>
       <text x="218" y="58" class="font micro grey" font-weight="500">Reg. / Batch / Mfg / Exp / MRP</text>
       <text x="218" y="96" class="font micro grey" font-weight="500">Mfr. address / Customer care</text>
@@ -110,7 +95,7 @@
 
     <g transform="translate(846 1454)">
       <rect x="0" y="0" width="204" height="204" rx="14" fill="#FFFFFF" stroke="#DDE5E1" stroke-width="3"/>
-      <image href="mercbex-qr-code.png" x="12" y="12" width="180" height="180" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../brand-system/mercbex-qr-code.png" x="12" y="12" width="180" height="180" preserveAspectRatio="xMidYMid meet"/>
     </g>
 
     <rect x="108" y="1670" width="984" height="58" fill="#18211D"/>
