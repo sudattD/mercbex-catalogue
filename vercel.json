@@ -1,12 +1,14 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/catalogue/index.html"
+      "destination": "/catalogue/",
+      "permanent": false
     },
     {
       "source": "/catalogue",
-      "destination": "/catalogue/index.html"
+      "destination": "/catalogue/",
+      "permanent": false
     }
   ]
 }
