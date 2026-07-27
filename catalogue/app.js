@@ -17,13 +17,13 @@ const products = [
     concentration: "20.0% SP",
     formula: "ACETAMIPRID 20.0% SP",
     mode: "Systemic + translaminar action",
-    mockup: "assets/mockups/aceman-single-bottle.png",
+    mockup: "assets/mockups/aceman-single-bottle-white-studio-base.png",
   },
 ];
 
 let selectedCategoryId = "insecticide";
 let selectedProductId = "aceman";
-let selectedPreview = "label";
+let selectedPreview = "studio";
 
 // Custom overrides for the edit panel — starts empty (uses product defaults)
 const editOverrides = {
@@ -54,6 +54,63 @@ const downloadButton = document.querySelector("#downloadSvg");
 let zoomLevel = 100;
 const printButton = document.querySelector("#printLabel");
 const previewTabs = document.querySelectorAll("[data-preview]");
+
+function applyPreviewZoom() {
+  document.getElementById("zoomValue").textContent = `${zoomLevel}%`;
+  labelPreview.style.width = `${zoomLevel}%`;
+  labelPreview.style.maxWidth = "none";
+  bottlePreview.style.setProperty("--preview-scale", String(zoomLevel / 100));
+}
+
+async function imageToDataUrl(path) {
+  const response = await fetch(new URL(path, window.location.href));
+  if (!response.ok) throw new Error(`Could not load ${path}`);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function serializedSelfContainedLabelSvg() {
+  const svg = labelPreview.querySelector("svg");
+  if (!svg) return "";
+
+  const clone = svg.cloneNode(true);
+  const [logoDataUrl, qrDataUrl] = await Promise.all([
+    imageToDataUrl("../brand-system/mercbex-logo.png"),
+    imageToDataUrl("../brand-system/mercbex-qr-code.png"),
+  ]);
+
+  clone.querySelectorAll("image").forEach((image) => {
+    const href = image.getAttribute("href") || image.getAttributeNS("http://www.w3.org/1999/xlink", "href") || "";
+    if (href.includes("mercbex-logo")) {
+      image.setAttribute("href", logoDataUrl);
+      image.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", logoDataUrl);
+    }
+    if (href.includes("mercbex-qr-code")) {
+      image.setAttribute("href", qrDataUrl);
+      image.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", qrDataUrl);
+    }
+  });
+
+  return new XMLSerializer().serializeToString(clone);
+}
+
+function downloadSvgString(svgString, filename) {
+  const blob = new Blob([svgString], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+window.serializedSelfContainedLabelSvg = serializedSelfContainedLabelSvg;
 
 function categoryById(id) {
   return categories.find((category) => category.id === id) || categories[0];
@@ -103,7 +160,7 @@ function renderProducts() {
       <article class="product-card" aria-selected="false">
         <span class="product-category" style="--category-color: ${category.color}">${category.name}</span>
         <h3>Coming Soon</h3>
-        <p class="formula">Products can be added here as the catalogue grows.</p>
+        <p class="formula">Use the ACEMAN master preview to create and test future labels.</p>
       </article>
     `;
     return;
@@ -126,7 +183,7 @@ function renderProducts() {
               <h3>${product.name}</h3>
               <p class="formula">${product.formula}</p>
             </div>
-            ${product.mockup ? `<img class="product-mockup-thumb" src="${product.mockup}" alt="${product.name} bottle mockup" />` : `<div class="mockup-pending">Mockup<br />pending</div>`}
+            ${product.mockup ? `<img class="product-mockup-thumb" src="${product.mockup}" alt="${product.name} bottle mockup base" />` : `<div class="mockup-pending">Mockup<br />pending</div>`}
           </div>
         </button>
       `;
@@ -323,32 +380,34 @@ function renderLabel() {
   document.getElementById("editConcColorCustom").value = editOverrides.concColorCustom || "#76B82A";
   document.getElementById("editModeColor").value = editOverrides.modeColor || "";
   document.getElementById("editModeColorCustom").value = editOverrides.modeColorCustom || "#FFFFFF";
-  bottlePreview.innerHTML = `
-    ${product.mockup ? `
-      <figure class="bottle-composite">
+  const studioMarkup = product.mockup ? `
+      <figure class="bottle-composite" aria-label="${activeOverrides.name} live studio bottle preview">
         <div class="bottle-image-wrap">
-          <img class="bottle-bg" src="${product.mockup}" alt="${product.name} realistic bottle mockup" />
+          <img class="bottle-bg" src="${product.mockup}" alt="${activeOverrides.name} blank bottle mockup base" />
           <div class="bottle-label-overlay">
             ${labelSvg(product, category, activeOverrides)}
           </div>
+          <div class="bottle-laminate bottle-laminate-left" aria-hidden="true"></div>
+          <div class="bottle-laminate bottle-laminate-center" aria-hidden="true"></div>
+          <div class="bottle-edge-shadow bottle-edge-shadow-left" aria-hidden="true"></div>
+          <div class="bottle-edge-shadow bottle-edge-shadow-right" aria-hidden="true"></div>
         </div>
       </figure>
     ` : `
       <div class="mockup-empty" style="--category-color: ${category.color}">
         <img src="../brand-system/mercbex-logo.png" alt="MERCBEX" />
         <p>${product.name}</p>
-        <strong>Real bottle mockup pending</strong>
-        <span>Generate or upload a realistic bottle visual for this SKU.</span>
+        <strong>Studio bottle base pending</strong>
+        <span>Add the blank bottle source to preview the current label.</span>
       </div>
-    `}
-  `;
+    `;
+
+  bottlePreview.innerHTML = studioMarkup;
   labelPreview.hidden = selectedPreview !== "label";
-  bottlePreview.hidden = selectedPreview !== "bottle";
+  bottlePreview.hidden = selectedPreview === "label";
   downloadButton.disabled = selectedPreview !== "label";
 
-  // Apply zoom on the container so it actually changes layout size
-  labelPreview.style.width = `${zoomLevel}%`;
-  labelPreview.style.maxWidth = "none";
+  applyPreviewZoom();
 }
 
 function renderEmptyLabel(category) {
@@ -362,7 +421,7 @@ function renderEmptyLabel(category) {
   `;
   bottlePreview.innerHTML = "";
   labelPreview.hidden = false;
-  bottlePreview.hidden = selectedPreview !== "bottle";
+  bottlePreview.hidden = selectedPreview === "label";
   downloadButton.disabled = true;
 }
 
@@ -456,47 +515,29 @@ document.getElementById("resetEditPanel").addEventListener("click", () => {
   renderLabel();
 });
 
-downloadButton.addEventListener("click", () => {
+downloadButton.addEventListener("click", async () => {
   if (downloadButton.disabled) return;
   const product = productById(selectedProductId);
   const downloadName = (editOverrides.name || "").trim() || product.name;
-  const svg = labelPreview.querySelector("svg");
-  const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = `mercbex-${downloadName.toLowerCase()}-label.svg`;
-  link.click();
-  URL.revokeObjectURL(url);
+  const svgString = await serializedSelfContainedLabelSvg();
+  if (!svgString) return;
+  downloadSvgString(svgString, `mercbex-${downloadName.toLowerCase()}-label.svg`);
 });
 
 // --- Zoom slider ---
 
 document.getElementById("zoomSlider").addEventListener("input", (e) => {
   zoomLevel = parseInt(e.target.value, 10);
-  document.getElementById("zoomValue").textContent = zoomLevel + "%";
-  labelPreview.style.width = `${zoomLevel}%`;
-  labelPreview.style.maxWidth = "none";
+  applyPreviewZoom();
 });
 
 // --- Save Label to disk ---
-document.getElementById("saveLabel").addEventListener("click", () => {
+document.getElementById("saveLabel").addEventListener("click", async () => {
   const product = productById(selectedProductId);
   const downloadName = (editOverrides.name || "").trim() || product.name;
-  const svg = labelPreview.querySelector("svg");
-  if (!svg) return;
-
-  // Serialize SVG with current edits
-  const serializer = new XMLSerializer();
-  const svgString = serializer.serializeToString(svg);
-
-  const blob = new Blob([svgString], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `mercbex-${downloadName.toLowerCase()}-label.svg`;
-  link.click();
+  const svgString = await serializedSelfContainedLabelSvg();
+  if (!svgString) return;
+  downloadSvgString(svgString, `mercbex-${downloadName.toLowerCase()}-label.svg`);
 
   // Also display a message
   const btn = document.getElementById("saveLabel");
@@ -507,8 +548,6 @@ document.getElementById("saveLabel").addEventListener("click", () => {
     btn.textContent = origText;
     btn.style.background = "";
   }, 2000);
-
-  URL.revokeObjectURL(url);
 });
 
 printButton.addEventListener("click", () => {
@@ -518,6 +557,14 @@ printButton.addEventListener("click", () => {
   });
   renderLabel();
   window.print();
+});
+
+window.addEventListener("afterprint", () => {
+  selectedPreview = "studio";
+  previewTabs.forEach((button) => {
+    button.setAttribute("aria-selected", String(button.dataset.preview === "studio"));
+  });
+  renderLabel();
 });
 
 updateView();

@@ -159,9 +159,10 @@ h2 {
   width: 104px;
   aspect-ratio: 1 / 1;
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center bottom;
-  background: #050706;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1ef 100%);
+  padding: 4px;
 }
 
 .mockup-pending {
@@ -336,6 +337,7 @@ h2 {
   display: flex;
   justify-content: center;
   width: 100%;
+  --preview-scale: 1;
 }
 
 .preview-slot-label {
@@ -526,30 +528,51 @@ h2 {
   margin: 0;
   border-radius: 8px;
   background:
-    radial-gradient(circle at 50% 84%, rgba(255, 255, 255, 0.12), transparent 34%),
-    linear-gradient(180deg, #101412 0%, #060807 100%);
+    radial-gradient(circle at 50% 88%, rgba(24, 33, 29, 0.12), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #eef1ef 100%);
   padding: 18px;
   overflow: hidden;
 }
 
 .real-bottle-preview img {
   display: block;
-  width: 100%;
+  width: min(100%, 420px);
+  max-height: calc(100vh - 150px);
   height: auto;
+  object-fit: contain;
   border-radius: 6px;
+}
+
+.studio-packshot-preview {
+  display: grid;
+  place-items: center;
+  min-height: 520px;
+  margin: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1ef 100%);
+  padding: 18px;
+  overflow: hidden;
+}
+
+.studio-packshot-preview img {
+  display: block;
+  width: min(100%, 300px);
+  max-height: calc(100vh - 150px);
+  height: auto;
+  object-fit: contain;
 }
 
 .bottle-composite {
   position: relative;
   display: inline-block;
   margin: 0;
-  width: 100%;
-  max-width: 380px;
+  width: calc(300px * var(--preview-scale));
+  max-width: none;
   border-radius: 8px;
   background:
-    radial-gradient(circle at 50% 84%, rgba(255, 255, 255, 0.12), transparent 34%),
-    linear-gradient(180deg, #101412 0%, #060807 100%);
-  padding: 18px;
+    radial-gradient(circle at 50% 88%, rgba(24, 33, 29, 0.12), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #eef1ef 100%);
+  padding: 10px 20px;
   overflow: hidden;
   line-height: 0;
 }
@@ -570,15 +593,49 @@ h2 {
 }
 
 .bottle-label-overlay {
-	position: absolute;
-	top: 12%;
-	left: 27%;
-	width: 46%;
-	height: auto;
-	overflow: hidden;
-	box-shadow:
-		0 3px 6px rgba(0, 0, 0, 0.4);
-	transform: perspective(800px) rotateY(-3deg);
+  position: absolute;
+  top: 39.1%;
+  left: 12.2%;
+  width: 75.6%;
+  height: auto;
+  overflow: hidden;
+  border-radius: 5px 5px 12px 12px;
+  clip-path: polygon(4.5% 0, 95.5% 0, 98% 100%, 2% 100%);
+  filter:
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.14))
+    saturate(0.96)
+    contrast(0.98);
+  transform:
+    perspective(900px)
+    rotateX(0.7deg)
+    rotateY(-0.8deg)
+    scaleX(0.975);
+  transform-origin: 50% 50%;
+  mix-blend-mode: multiply;
+}
+
+.bottle-label-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.48), rgba(0, 0, 0, 0.28) 6%, transparent 16%, transparent 84%, rgba(0, 0, 0, 0.3) 94%, rgba(255, 255, 255, 0.5)),
+    linear-gradient(90deg, transparent 0 24%, rgba(255, 255, 255, 0.22) 42%, rgba(255, 255, 255, 0.08) 55%, transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 16%, transparent 84%, rgba(0, 0, 0, 0.16));
+  mix-blend-mode: soft-light;
+}
+
+.bottle-label-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(238, 241, 239, 0.9), rgba(238, 241, 239, 0.12) 4.5%, transparent 9%),
+    linear-gradient(90deg, rgba(238, 241, 239, 0.92), rgba(238, 241, 239, 0.16) 5.8%, transparent 11.5%),
+    linear-gradient(270deg, rgba(238, 241, 239, 0.92), rgba(238, 241, 239, 0.16) 5.8%, transparent 11.5%);
 }
 
 .bottle-label-overlay svg {
@@ -587,14 +644,60 @@ h2 {
   height: auto;
 }
 
+.bottle-laminate,
+.bottle-edge-shadow {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.bottle-laminate-left {
+  top: 40.8%;
+  left: 21%;
+  width: 14%;
+  height: 43%;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
+  filter: blur(9px);
+  opacity: 0.34;
+}
+
+.bottle-laminate-center {
+  top: 41.3%;
+  left: 48%;
+  width: 10%;
+  height: 42%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  filter: blur(12px);
+  opacity: 0.26;
+}
+
+.bottle-edge-shadow-left,
+.bottle-edge-shadow-right {
+  top: 39.3%;
+  width: 10%;
+  height: 46%;
+  background: rgba(0, 0, 0, 0.12);
+  filter: blur(9px);
+}
+
+.bottle-edge-shadow-left {
+  left: 9.5%;
+}
+
+.bottle-edge-shadow-right {
+  right: 9.5%;
+}
+
 .mockup-empty {
   display: grid;
   align-content: center;
   justify-items: center;
   min-height: 520px;
   border-radius: 8px;
-  background: linear-gradient(180deg, #101412 0%, #060807 100%);
-  color: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1ef 100%);
+  color: var(--mercbex-charcoal);
   padding: 34px;
   text-align: center;
 }
