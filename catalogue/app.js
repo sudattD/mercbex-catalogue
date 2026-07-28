@@ -480,6 +480,9 @@ function labelSvg(product, category, overrides = {}) {
   const claimSize = (overrides.claimSize || "").trim() || "31";
   const claimColor = (overrides.claimColorCustom || overrides.claimColor || "").trim();
   const panelColor = overrideColor;
+  const secondaryConnectorMarkup = overrideActive2 ? `
+      <text x="208" y="390" class="font" font-size="${concSize}" font-weight="750" fill="${active2Color || activeColor || '#FFFFFF'}">+</text>
+    ` : "";
   const secondaryIngredientMarkup = overrideActive2 || overrideConc2 ? `
       ${overrideActive2 ? `<text x="0" y="452" class="font" font-size="${active2Size}" font-weight="650" letter-spacing="0" fill="${active2Color || '#FFFFFF'}">${overrideActive2}</text>` : ""}
       ${overrideConc2 ? `<text x="0" y="${overrideActive2 ? 528 : 452}" class="font" font-size="${conc2Size}" font-weight="750" fill="${conc2Color || '#76B82A'}">${overrideConc2}</text>` : ""}
@@ -543,6 +546,7 @@ function labelSvg(product, category, overrides = {}) {
       <path d="M0 218 C160 246 335 246 536 218" stroke="#FFFFFF" stroke-width="9" fill="none" opacity="0.45"/>
       <text x="0" y="314" class="font" font-size="${activeSize}" font-weight="650" letter-spacing="0" fill="${activeColor || '#FFFFFF'}">${overrideActive}</text>
       <text x="0" y="390" class="font" font-size="${concSize}" font-weight="750" fill="${concColor || '#76B82A'}">${overrideConc}</text>
+      ${secondaryConnectorMarkup}
       ${secondaryIngredientMarkup}
     </g>
 
